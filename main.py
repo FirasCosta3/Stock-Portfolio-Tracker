@@ -3,7 +3,7 @@ import logging
 from database import Database
 from stock import currency_symbols
 from portfolio import Portfolio
-from search import get_stock, get_details, search_stock
+from search import get_stock, get_details, search_stock, search_index
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -12,6 +12,7 @@ logging.getLogger("yfinance").setLevel(logging.CRITICAL)  # blocks non-critical 
 app = Flask(__name__)
 CORS(app)
 currency = "GBP"
+stock_search = ""
 
 @app.route("/portfolio", methods = ["POST"])
 def portfolio():
@@ -33,11 +34,26 @@ def stocks():
     data = request.get_json()
     stock_choice = data.get("search")
     stock_searches = search_stock(stock_choice)
-    print(stock_searches)
-    if stock_searches == False:
+    global stock_search
+    stock_search = stock_searches[1]
+    if stock_searches[0] == False:
         return jsonify({"status": 404})
     else:
-        return jsonify({"data": stock_searches, "status": 200})
+        return jsonify({"data": stock_searches[0], "status": 200})
+
+@app.route("/trade", methods = ["POST"])
+def trade():
+    data = request.get_json()
+    print(data)
+    index = data.get("index")
+    trade = data.get("trade")
+    currency = data.get("currency")
+    search_index(stock_search, index, trade, currency)
+    return jsonify({"status": 200})
+
+
+
+
 
 def display_currency(currency_symbols):
     display_cur = input("Enter the currency you would like to view your portfolio in e.g 'GBP' or 'USD'\n").upper()

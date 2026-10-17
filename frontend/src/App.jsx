@@ -4,12 +4,17 @@ import './App.css';
 import {Currency_buttons} from './components/currencies.jsx';
 
 function App() {
-        const [portfolioData, setPortfolioData] = useState(null)
+        const [portfolioData, setPortfolioData] = useState(null);
+        const [buySell, setBuySell] = useState("")
         const [showCurrencies, setCurrencies] = useState(false);
-        const [menuActive, setMenuActive] = useState(false)
-        const [stockSearch, setStockSearch] = useState("")
-        const [foundStocks, setFoundStocks] = useState([])
-        const [desiredStock, setDesiredStock] = useState("")
+        const [menuActive, setMenuActive] = useState(false);
+        const [howMuch, setHowMuch] = useState("")
+        const [tradeValue, setTradeValue] = useState("")
+        const [stockSearch, setStockSearch] = useState("");
+        const [foundStocks, setFoundStocks] = useState([]);
+        const [tradeType, setTradeType] = useState("")
+        const [stockIndex, setStockIndex] = useState("")
+        const [desiredStock, setDesiredStock] = useState("");
         const [currency, currencySet] = useState(() => {
             const saved = localStorage.getItem("currency")
             return saved ? saved : "GBP";
@@ -60,18 +65,33 @@ function App() {
         const data = await response.json();
         if (data.status === 200){
             setFoundStocks(data.data)
-        }
+        }   
         else {
             setFoundStocks([])
         }
-
     }
 
+    const sendTrade = async (e) => {
+        e.preventDefault();
+        const response = await fetch("http://127.0.0.1:5000/trade", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                trade: tradeValue,
+                type: tradeType,
+                index: stockIndex,
+                currency: chartSymbol
+            })
+        });
+    }
     const currency_cur = localStorage.getItem("currency") || "GBP"
     const currency_symb = localStorage.getItem("symbol") || "£"
-    const changeSearches = (index) => {
+    const changeSearches = (index) => { 
         setFoundStocks([]);
         setDesiredStock(foundStocks[index])
+        setStockIndex(index)
     }
     return (
         <>
@@ -105,11 +125,18 @@ function App() {
                 <div id ="show-desired" className={desiredStock ? "active" : ""}>
                     <h1 id="desired-title" className="main-font">{desiredStock}</h1>
                     <div id="buy-sell-div">
-                        <button className="buy-sell">Buy</button>
-                        <button className="buy-sell">Sell</button>
-                    </div>
-                    <div id="stock-details">
-                        <p>test</p>
+                        <button onClick={() => {setTradeType("buy"); setBuySell("buying?"); setHowMuch("How much are you "); }} className="buy-sell">Buy</button>
+                        <button onClick={() => {setTradeType("sell"); setBuySell("selling?"); setHowMuch("How much are you "); }} className="buy-sell">Sell</button>
+                    </div>  
+                    <div id="stock-details" className={tradeType ? "active": ""}>
+                        <h1 id="buy-sell-title" className="main-font">{howMuch}{buySell}</h1>
+                        <div id="trade-div">
+                            <label className="main-font" id="trade-label">Value</label>
+                            <form onSubmit={(e) => sendTrade(e)} className="main-font" id="trade-value">
+                                <span id="pound">{chartSymbol}</span>
+                                <input onChange={(e) => setTradeValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-choice" placeholder="0"></input>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -118,4 +145,3 @@ function App() {
         );
 }
 export default App;
-

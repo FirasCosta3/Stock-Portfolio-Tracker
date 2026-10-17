@@ -1,5 +1,6 @@
 import requests
 import yfinance as yf
+import ast
 
 def search_stock(query):
     search_results = yf.Search(query, max_results=5).quotes
@@ -12,7 +13,25 @@ def search_stock(query):
             symbol = result.get("symbol", "N/A")
             exchange = result.get("exchange", "N/A")
             results.append(f"{symbol}: {shortname}: {exchange}")
-    return results
+    return [results, search_results]
+
+def search_index(search_results, index, trade, currency):
+    stock_info = []
+    print(search_results, "kd")
+    for i in search_results[0]:
+        stock_tic = search_results[index].get("symbol", "unknown")
+        stock_ticker = yf.Ticker(stock_tic)
+        stock_info.append(stock_ticker.info.get("allTimeHigh",0))  # not brackets as it will crash if not find so use .get so if not found it can assign 0
+        symbol_choice = search_results[index].get("symbol", "N/A")
+        stock_info.append(stock_ticker.info.get("displayName", symbol_choice))
+        stock_info.append(stock_ticker.info.get("shortname", "N/A"))
+        stock_info.append(symbol_choice)
+        stock_currency = stock_ticker.info.get("currency","N/A")  # gets currency symbol according to the market e.g. US market = $
+        stock_info.append(currency)
+        stock_info.append(trade)
+        stock_info.append(stock_currency)
+        return stock_info
+
 
 def get_stock(query, choice2, rows, currency_symbols):
     stock_info = []
