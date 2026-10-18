@@ -1,4 +1,5 @@
-.currency-button
+.currency-button,
+.buy-sell
 {
     will-change: transform;
     backface-visibility: hidden;
@@ -257,7 +258,7 @@ body{
 #buy-sell-div{
     display: flex;
     justify-content: space-between;
-    width: 50%;
+    width: 100%;
 }
 
 .buy-sell{
@@ -265,9 +266,15 @@ body{
     border: green solid 2px;
     cursor: pointer;
     height: 40px;
-    width: 100px;
-    font-size: 26px;
+    width: 150px;
+    font-size: 21px;
     border-radius: 9px;
+    transition: 0.3s ease;
+}
+
+.buy-sell.active{
+    background: grey;
+    transform: scale(1.25)
 }
 
 #stock-details{

@@ -135,25 +135,11 @@ while True:
                 continue
             else:
                 try:
-                    print("If you have made a mistake type [M] to return to the main menu")
-                    total_am = input(
-                        f"Enter your total amount invested in {stock_info[1]} / net deposits\n").lower()
-                    if total_am.strip() == "m":
-                        continue
-                    else:
-                        total_amount = float(total_am)
-                        print("If you have made a mistake type [M] to return to the main menu")
-                        average_p = input(
-                            f"Enter the average price you paid for {stock_info[1]} (can be found on your broker app)\n").lower()
-                        if average_p.strip() == "m":
-                            continue
-                        else:
                             average_price = float(average_p)
                             symbol = stock_info[3]
                             stock_ticker = yf.Ticker(symbol)
                             max_price = stock_ticker.info.get("allTimeHigh", 0)
-                            if total_amount > 0 and (
-                                    average_price > 0 and (max_price == 0 or average_price <= max_price)):
+                            if total_amount > 0 and (average_price > 0 and (max_price == 0 or average_price <= max_price)):
                                 delete = input(
                                     f"Enter [D] if you would like to delete your current {stock_info[1]} holdings and replace it with your inputs or [ANY OTHER KEY] to add your inputs to your current holdings\n").lower()
                                 if delete.strip() == "d":

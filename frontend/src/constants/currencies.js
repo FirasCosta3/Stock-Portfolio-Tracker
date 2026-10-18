@@ -19,4 +19,4 @@ export const Currencies ={
     "NOK": "kr",
     "DKK": "kr",
     "PLN": "zł",
-    "KRW": "₩",}
+    "KRW": "₩"}

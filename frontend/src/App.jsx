@@ -2,13 +2,12 @@ import {PieChart} from './components/Pie.jsx';
 import {useState, useEffect} from 'react'
 import './App.css';
 import {Currency_buttons} from './components/currencies.jsx';
+import {Currencies} from './constants/currencies.js'
 
 function App() {
         const [portfolioData, setPortfolioData] = useState(null);
-        const [buySell, setBuySell] = useState("");
         const [showCurrencies, setCurrencies] = useState(false);
         const [menuActive, setMenuActive] = useState(false);
-        const [howMuch, setHowMuch] = useState("");
         const [tradeValue, setTradeValue] = useState("");
         const [buyValue, setBuyValue] = useState("");
         const [stockSearch, setStockSearch] = useState("");
@@ -19,6 +18,7 @@ function App() {
         const [desiredStock, setDesiredStock] = useState("");
         const [stockInfo, setStockInfo] = useState("");
         const [stockPurchase, setStockPurchase] = useState("");
+        const [stockCurrency, setStockCurrency] = useState("");
         const [tradeError, setTradeError] = useState("")
         const [currency, currencySet] = useState(() => {
             const saved = localStorage.getItem("currency")
@@ -91,6 +91,7 @@ function App() {
             const data = await response.json();
             if (data.status === 200){
                 setStockInfo(data.info)
+                setStockCurrency(Currencies[(data.info)[5]])
             }
         }
         tradeDetails();
@@ -125,7 +126,7 @@ function App() {
         const data = await response.json()
         if (data.status === 404){
             if (data.error === "high")
-                setTradeError(`Max price was ${chartSymbol}${data.max_price} \n The price was never ${chartSymbol}${buyValue}`)
+                setTradeError(`Max price was ${stockCurrency}${data.max_price} \n The price was never ${stockCurrency}${buyValue}`)
             setErrorMessage(true)
         }
         else if (data.status === 200){
@@ -181,8 +182,9 @@ function App() {
                 <div id ="show-desired" className={desiredStock ? "active" : ""}>
                     <h1 id="desired-title" className="main-font">{desiredStock}</h1>
                     <div id="buy-sell-div">
-                        <button onClick={() => {setTradeType("buy"); setBuySell("buying?"); setHowMuch("How much are you "); }} className="buy-sell">Buy</button>
-                        <button onClick={() => {setTradeType("sell"); setBuySell("selling?"); setHowMuch("How much are you "); }} className="buy-sell">Sell</button>
+                        <button onClick={() => setTradeType("buy")} className={tradeType === "buy" ? "buy-sell active" : "buy-sell"}>Buy</button>
+                        <button onClick={() => setTradeType("sell")} className={tradeType === "sell" ? "buy-sell active" : "buy-sell"}>Sell</button>
+                        <button onClick={() => setTradeType("overide")} className={tradeType === "overide" ? "buy-sell active" : "buy-sell"}>Overide Stock</button>
                     </div>  
                     <div id="stock-details" className={tradeType ? "active": ""}>
                         <div id="trade-div">
@@ -195,7 +197,7 @@ function App() {
                         <div id="price-div">
                             <label htmlFor="trade-p" className="main-font" id="trade-price">Price Average</label>
                             <form onSubmit={(e) => sendTrade(e)} className="main-font trade-value">
-                                <span className="pound">{chartSymbol}</span>
+                                <span className="pound">{stockCurrency}</span>
                                 <input onChange={(e) => setBuyValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-p" placeholder="0"></input>
                             </form>
                         </div>

@@ -51,10 +51,11 @@ def get_details(stock_info, user_amount, share_p, trade_type, user_currency, cur
                 total_value = total_shares * share_price
                 if shares_2sell > total_shares:
                     return {"status": 404, "error": "sold", "total": total_value, "price": share_price}
-            if share_price > 0 and (max_price == 0 or share_price <= max_price):
-                purchases.append((amount_invested, share_price))  # two brackets to store as a tuple
-                return {"status": 200, "purchases": purchases}
-            elif share_price < 0:
-                return {"status": 404, "error": "zero}"}
-            elif share_price > max_price:
-                return {"status": 404, "error": "high", "max_price": max_price}
+            if trade_type == "buy":
+                if share_price > 0 and (max_price == 0 or share_price <= max_price):
+                    purchases.append((amount_invested, share_price))  # two brackets to store as a tuple
+                    return {"status": 200, "purchases": purchases}
+                elif share_price < 0:
+                    return {"status": 404, "error": "zero}"}
+                elif share_price > max_price:
+                    return {"status": 404, "error": "high", "max_price": max_price}
