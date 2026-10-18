@@ -44,6 +44,7 @@ class Portfolio:
         return average_price
     
     def display_portfolio(self, average_price, user_currency, currency_symbols):  # calculates percentage change based on live data
+        print(average_price)
         stock_dict = {}
         total_invested = []
         for stock in average_price:
@@ -59,11 +60,10 @@ class Portfolio:
                 continue
             else:
                 current_price = stock_ticker.get_current_price()
-                
                 if current_price is None:
                     print(f"Sorry we couldn't fetch the data for {display_name} right now\nPlease try again later")
                     continue
-                
+
                 current_price = round(current_price, 2)
                 percentage_change = float(round(((current_price - stock[0]) / stock[0]) * 100, 2))
                 live_price = (current_price * stock[2])

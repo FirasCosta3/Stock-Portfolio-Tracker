@@ -114,6 +114,16 @@ body{
     margin-left: 8px;
 }
 
+#reset-port{
+    background: transparent;
+    border: 2px green solid;
+    border-radius: 7px;
+    margin-top: 35px;
+    position: absolute;
+    cursor: pointer;
+    margin-left: 36%;
+}
+
 .stock-buy{
     display: flex;
     z-index: -1;
@@ -281,7 +291,7 @@ body{
     color: black;
 }
 
-#trade-value{
+.trade-value{
     color: black;
     height: 100%;
     font-size: 30px;
@@ -298,9 +308,29 @@ body{
     color: black;
 }
 
+#trade-p{
+    background: transparent;
+    outline: 0;
+    width: 100%;
+    field-sizing: content;
+    font-size: 29px;
+    border: none;
+    color: black;
+}
+
 #trade-div{
+    margin-top: 70px;
+    min-width: 15%;
+    max-width: 50%;
+    box-sizing: border-box;
+    border: black solid 2px;
+    border-radius: 12px;
+    padding: 0 1% 0 5%;
+}
+
+#price-div{
     margin-bottom: auto;
-    margin-top: 20px;
+    margin-top: 70px;
     min-width: 15%;
     max-width: 50%;
     box-sizing: border-box;
@@ -316,7 +346,30 @@ body{
     color: black;
 }
 
-#pound{
+#trade-price{
+    position: absolute;
+    transform: translate(-32%, -110%);
+    font-size: 26px;
+    color: black;
+}
+
+.pound{
     position: absolute;
     transform: translateX(-100%);
+}
+
+#error-message{
+    position: absolute;
+    color: #AB0A0A;
+    visibility: hidden;
+    opacity: 0;
+    letter-spacing: 1px;
+}
+
+#error-message.active{
+    white-space: pre-line;
+    position: relative;
+    margin-bottom: auto;
+    visibility: visible;
+    opacity: 1;
 }

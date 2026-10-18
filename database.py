@@ -20,8 +20,10 @@ class Database:
     
     def db_assign(self, symbol, purchases):  # assign variables inputed into the database table
         for amount_invested, share_price in purchases:
+            amount_invested = f"{amount_invested:.2f}"
+            share_price = f"{share_price:.2f}"
             self.cursor.execute("INSERT INTO portfolio(symbol, amount_invested, share_price) VALUES(?,?,?)",
-                                (symbol, amount_invested, share_price))
+                                (symbol, float(amount_invested), float(share_price)))
             self.connection.commit()
     
     def db_clear_symbol(self, symbol):  # removes the row if we call to replace it
@@ -29,9 +31,6 @@ class Database:
         self.connection.commit()
     
     def df_reset(self):
-        choice = input(
-            "Press [D] to confirm resetting your portfolio [ANY OTHER KEY] to return to the main menu\n").lower()
-        if choice.strip() == "d":
-            self.cursor.execute("DELETE FROM portfolio")
-            self.connection.commit()
-            print("Your portfolio has been reset")
+        self.cursor.execute("DELETE FROM portfolio")
+        self.connection.commit()
+        return 200

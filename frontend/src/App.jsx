@@ -5,16 +5,21 @@ import {Currency_buttons} from './components/currencies.jsx';
 
 function App() {
         const [portfolioData, setPortfolioData] = useState(null);
-        const [buySell, setBuySell] = useState("")
+        const [buySell, setBuySell] = useState("");
         const [showCurrencies, setCurrencies] = useState(false);
         const [menuActive, setMenuActive] = useState(false);
-        const [howMuch, setHowMuch] = useState("")
-        const [tradeValue, setTradeValue] = useState("")
+        const [howMuch, setHowMuch] = useState("");
+        const [tradeValue, setTradeValue] = useState("");
+        const [buyValue, setBuyValue] = useState("");
         const [stockSearch, setStockSearch] = useState("");
+        const [errorMessage, setErrorMessage] = useState(false);
         const [foundStocks, setFoundStocks] = useState([]);
-        const [tradeType, setTradeType] = useState("")
-        const [stockIndex, setStockIndex] = useState("")
+        const [tradeType, setTradeType] = useState("");
+        const [stockIndex, setStockIndex] = useState("");
         const [desiredStock, setDesiredStock] = useState("");
+        const [stockInfo, setStockInfo] = useState("");
+        const [stockPurchase, setStockPurchase] = useState("");
+        const [tradeError, setTradeError] = useState("")
         const [currency, currencySet] = useState(() => {
             const saved = localStorage.getItem("currency")
             return saved ? saved : "GBP";
@@ -70,22 +75,71 @@ function App() {
             setFoundStocks([])
         }
     }
+    useEffect(() => {
+        if (stockIndex === "") return;
+        const tradeDetails = async () => {
+            const response = await fetch("http://127.0.0.1:5000/tradeDetails", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    index: stockIndex,
+                    currency: chartSymbol
+                })
+            });
+            const data = await response.json();
+            if (data.status === 200){
+                setStockInfo(data.info)
+            }
+        }
+        tradeDetails();
+        }, [stockIndex])
+
+    const resetPortfolio = async () => {
+        const response = await fetch("http://127.0.0.1:5000/reset", {
+            method: "POST"
+        })
+        const data = await response.json()
+        if (data.status === 200){
+            location.reload()
+        }
+    }
 
     const sendTrade = async (e) => {
         e.preventDefault();
+        if (buyValue && tradeValue){
         const response = await fetch("http://127.0.0.1:5000/trade", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                trade: tradeValue,
-                type: tradeType,
-                index: stockIndex,
-                currency: chartSymbol
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            type: tradeType,
+            trade: tradeValue,
+            info: stockInfo,
+            currency: currency,
+            price: buyValue
             })
         });
+        const data = await response.json()
+        if (data.status === 404){
+            if (data.error === "high")
+                setTradeError(`Max price was ${chartSymbol}${data.max_price} \n The price was never ${chartSymbol}${buyValue}`)
+            setErrorMessage(true)
+        }
+        else if (data.status === 200){
+            setStockPurchase(data.purchases)
+            location.reload()
+          }
+
     }
+        else {
+            setTradeError("Make sure no fields are blank")
+            setErrorMessage(true)
+        }
+};
+
     const currency_cur = localStorage.getItem("currency") || "GBP"
     const currency_symb = localStorage.getItem("symbol") || "£"
     const changeSearches = (index) => { 
@@ -93,6 +147,7 @@ function App() {
         setDesiredStock(foundStocks[index])
         setStockIndex(index)
     }
+
     return (
         <>
     <nav id="top-nav">
@@ -103,6 +158,7 @@ function App() {
     </nav>
     <div className="pie-chart">
         <button id="new-stock" className={"main-font"} onClick={() => setMenuActive(!menuActive)}>+ New stock</button>
+        <button id="reset-port" className={"main-font"} onClick={resetPortfolio}>Reset Portfolio</button>
         <PieChart symbol = {chartSymbol} portfolio={portfolioData}/>
     </div>
     <div className={menuActive ? "stock-buy active" : "stock-buy"}>
@@ -129,14 +185,21 @@ function App() {
                         <button onClick={() => {setTradeType("sell"); setBuySell("selling?"); setHowMuch("How much are you "); }} className="buy-sell">Sell</button>
                     </div>  
                     <div id="stock-details" className={tradeType ? "active": ""}>
-                        <h1 id="buy-sell-title" className="main-font">{howMuch}{buySell}</h1>
                         <div id="trade-div">
-                            <label className="main-font" id="trade-label">Value</label>
-                            <form onSubmit={(e) => sendTrade(e)} className="main-font" id="trade-value">
-                                <span id="pound">{chartSymbol}</span>
+                            <label htmlFor="trade-choice" className="main-font" id="trade-label">Value</label>
+                            <form onSubmit={(e) => sendTrade(e)} className="main-font trade-value">
+                                <span className="pound">{chartSymbol}</span>
                                 <input onChange={(e) => setTradeValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-choice" placeholder="0"></input>
                             </form>
+                        </div>  
+                        <div id="price-div">
+                            <label htmlFor="trade-p" className="main-font" id="trade-price">Price Average</label>
+                            <form onSubmit={(e) => sendTrade(e)} className="main-font trade-value">
+                                <span className="pound">{chartSymbol}</span>
+                                <input onChange={(e) => setBuyValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-p" placeholder="0"></input>
+                            </form>
                         </div>
+                        <p id="error-message" className={errorMessage ? "active main-font": ""}>{tradeError}</p>
                     </div>
                 </div>
             </div>
