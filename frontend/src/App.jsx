@@ -10,6 +10,7 @@ function App() {
         const [menuActive, setMenuActive] = useState(false);
         const [tradeValue, setTradeValue] = useState("");
         const [buyValue, setBuyValue] = useState("");
+        const [currentPrice, setCurrentPrice] = useState("");
         const [stockSearch, setStockSearch] = useState("");
         const [errorMessage, setErrorMessage] = useState(false);
         const [foundStocks, setFoundStocks] = useState([]);
@@ -90,6 +91,7 @@ function App() {
             });
             const data = await response.json();
             if (data.status === 200){
+                setCurrentPrice(data.info[6])
                 setStockInfo(data.info)
                 setStockCurrency(Currencies[(data.info)[5]])
             }
@@ -165,7 +167,7 @@ function App() {
     <div className={menuActive ? "stock-buy active" : "stock-buy"}>
         <button id="cancel-button" onClick={() => setMenuActive(!menuActive)}>
             <svg id="x-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="50" height="50">
-                <path d="M8.5 8.5 L15.5 15.5 M15.5 8.5 L8.5 15.5" stroke="black" strokeWidth="2" strokeLinecap="round" fill="none"/>
+                <path d="M8.5 8.5 L15.5 15.5 M15.5 8.5 L8.5 15.5" stroke="green" strokeWidth="2" strokeLinecap="round" fill="none"/>
             </svg>
         </button>
         <div id="search-div">
@@ -181,6 +183,7 @@ function App() {
                 })}
                 <div id ="show-desired" className={desiredStock ? "active" : ""}>
                     <h1 id="desired-title" className="main-font">{desiredStock}</h1>
+                    <h1 id="current-price" className="main-font">Live price: {stockCurrency}{currentPrice}</h1>
                     <div id="buy-sell-div">
                         <button onClick={() => setTradeType("buy")} className={tradeType === "buy" ? "buy-sell active" : "buy-sell"}>Buy</button>
                         <button onClick={() => setTradeType("sell")} className={tradeType === "sell" ? "buy-sell active" : "buy-sell"}>Sell</button>

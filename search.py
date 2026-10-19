@@ -1,6 +1,5 @@
 import requests
 import yfinance as yf
-import ast
 
 def search_stock(query):
     search_results = yf.Search(query, max_results=5).quotes
@@ -28,10 +27,13 @@ def search_index(search_results, index, currency):
         stock_currency = stock_ticker.info.get("currency","N/A")  # gets currency symbol according to the market e.g. US market = $
         stock_info.append(currency)
         stock_info.append(stock_currency)
+        current_price = stock_ticker.history(period="1d")
+        print(current_price)
+        stock_info.append(float(f"{current_price["Close"].iloc[-1]:.2f}"))
         return stock_info
     
 def get_details(stock_info, user_amount, share_p, trade_type, user_currency, current_portfolio):  # get the amount invested and the price of the stock at the price invested into a list as a tuple
-    max_price, display_name, shortname, symbol, currency, real_currency = stock_info
+    max_price, display_name, shortname, symbol, currency, real_currency, current_price = stock_info
     purchases = []
     user_amount = int(user_amount)
     if user_amount > 0:

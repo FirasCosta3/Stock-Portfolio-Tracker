@@ -149,7 +149,7 @@ body{
     z-index: 2;
     transform: translate(-48%, -56%);
     opacity: 1;
-    background: grey;
+    background: black;
 }
 
 #cancel-button{
@@ -179,6 +179,7 @@ body{
 #stock-search{
     text-align: center;
     background: transparent;
+    color: green;
     outline: none;
     border: 0;
     border-bottom: solid green 2px;
@@ -191,7 +192,7 @@ body{
 }
 
 ::placeholder{
-    color: black;
+    color: green;
 }
 
 #stock-search-div{
@@ -206,6 +207,7 @@ body{
 }
 
 .search-buttons{
+    color: green;
     position: relative;
     background: transparent;
     outline: none; 
@@ -229,7 +231,7 @@ body{
 }
 
 .search-buttons:hover {
-    background-color: #6E6D6D;
+    background-color: black;
 }
 
 #show-desired{
@@ -252,7 +254,8 @@ body{
 
 #desired-title{
     font-size: 28px;
-    color: black;  
+    color: green;  
+    margin-bottom: 0;
 }
 
 #buy-sell-div{
@@ -264,6 +267,7 @@ body{
 .buy-sell{
     background: transparent;
     border: green solid 2px;
+    color: green;
     cursor: pointer;
     height: 40px;
     width: 150px;
@@ -273,7 +277,7 @@ body{
 }
 
 .buy-sell.active{
-    background: grey;
+    background: black;
     transform: scale(1.25)
 }
 
@@ -295,11 +299,11 @@ body{
 
 #buy-sell-title{
     font-size: 28px;
-    color: black;
+    color: green;
 }
 
 .trade-value{
-    color: black;
+    color: green;
     height: 100%;
     font-size: 30px;
     width: 100%;
@@ -312,7 +316,7 @@ body{
     field-sizing: content;
     font-size: 29px;
     border: none;
-    color: black;
+    color: green;
 }
 
 #trade-p{
@@ -322,7 +326,7 @@ body{
     field-sizing: content;
     font-size: 29px;
     border: none;
-    color: black;
+    color: green;
 }
 
 #trade-div{
@@ -330,7 +334,7 @@ body{
     min-width: 15%;
     max-width: 50%;
     box-sizing: border-box;
-    border: black solid 2px;
+    border: green solid 2px;
     border-radius: 12px;
     padding: 0 1% 0 5%;
 }
@@ -341,7 +345,7 @@ body{
     min-width: 15%;
     max-width: 50%;
     box-sizing: border-box;
-    border: black solid 2px;
+    border: green solid 2px;
     border-radius: 12px;
     padding: 0 1% 0 5%;
 }
@@ -350,14 +354,14 @@ body{
     position: absolute;
     transform: translate(-32%, -110%);
     font-size: 26px;
-    color: black;
+    color: green;
 }
 
 #trade-price{
     position: absolute;
     transform: translate(-32%, -110%);
     font-size: 26px;
-    color: black;
+    color: green;
 }
 
 .pound{
@@ -379,4 +383,9 @@ body{
     margin-bottom: auto;
     visibility: visible;
     opacity: 1;
+}
+
+#current-price{
+    color: green;
+    font-size: 24px;
 }
