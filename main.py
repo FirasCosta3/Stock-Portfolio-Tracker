@@ -5,7 +5,7 @@ from stock import currency_symbols
 from portfolio import Portfolio
 from search import get_details, search_stock, search_index
 from flask import Flask, jsonify, request
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from statistics import percentage_changes, high_or_low, stock_graph
 
 logging.getLogger("yfinance").setLevel(logging.CRITICAL)  # blocks non-critical errors like 404 when user inputs invalid ticker
@@ -29,7 +29,6 @@ def portfolio():
     percentages = percentage_changes(stock_tickers) # finding highest or lowest stock of the day
     statistics = high_or_low(percentages)
     stock_of_day = stock_graph(statistics, stock_tickers, "1d")
-    print(stock_of_day)
     average_price = my_portfolio.price_average(grouped_stocks)
     db_data = my_portfolio.display_portfolio(average_price, currency, currency_symbols)
     return jsonify({"data": db_data, "status": 200, "stock_graph": stock_of_day})
@@ -95,21 +94,6 @@ def reset_portfolio():
     db = Database()
     db.df_reset()
     return jsonify({"status": 200})
-
-def display_currency(currency_symbols):
-    display_cur = input("Enter the currency you would like to view your portfolio in e.g 'GBP' or 'USD'\n").upper()
-    while display_cur not in currency_symbols.keys():
-        print("Enter a valid currency or type [Q] to quit")
-        display_cur = input("Enter the currency you would like to view your portfolio in e.g 'GBP' or 'USD'\n").upper()
-        if display_cur == "Q":
-            return display_cur
-    return display_cur
-
-choices_options = {"Declare a stock purchase to track on your portfolio": "1",
-                   "Declare a stock sell to track on your portfolio": "2",
-                   "Check my portfolio progress": "3",
-                   "Declare the total amount you invested and the average price of your stock if available": "4",
-                   "Reset your portfolio": "5"}
 
 if __name__ == "__main__":
     app.run(port = 5000, debug=True)

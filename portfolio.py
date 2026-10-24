@@ -43,7 +43,6 @@ class Portfolio:
         return average_price
     
     def display_portfolio(self, average_price, user_currency, currency_symbols):  # calculates percentage change based on live data
-        print(average_price)
         stock_dict = {}
         total_invested = []
         for stock in average_price:
@@ -55,13 +54,11 @@ class Portfolio:
                 cur = stock_ticker.ticker_obj.info.get("currency", "USD")
                 currency = currency_symbols.get(cur, cur)  # cur, cur falls back on the currency if the symbol isnt found
             if stock[0] == 0 or stock[2] <= 0:
-                print(f"You have sold all of your {display_name} shares the current holdings is {currency}0.00")
-                continue
+                return {"status": 404, "error": "sold-all"}
             else:
                 current_price = stock_ticker.get_current_price()
                 if current_price is None:
-                    print(f"Sorry we couldn't fetch the data for {display_name} right now\nPlease try again later")
-                    continue
+                    return {"status": 404, "error": "not-found"}
 
                 current_price = round(current_price, 2)
                 percentage_change = float(round(((current_price - stock[0]) / stock[0]) * 100, 2))
@@ -69,15 +66,15 @@ class Portfolio:
                 cur_symbol = currency_symbols.get(user_currency)
                 if cur == user_currency:
                     amount_invested = live_price
-                    total_invested.append(amount_invested)
+                    total_invested.append(round(float(amount_invested),2))
                 else:
                     try:
                         url = f"https://api.frankfurter.dev/v1/latest?base={cur}&symbols={user_currency}"
                         response = requests.get(url)
                         data = response.json()
                         rate = data["rates"][user_currency]
-                        amount_invested = round(float(live_price * rate), 2)
-                        total_invested.append(amount_invested)
+                        amount_invested = round((live_price * rate),2)
+                        total_invested.append(float(amount_invested))
                     except:
                         continue
                 stock_dict[display_name] = [percentage_change, cur_symbol, float(amount_invested)]

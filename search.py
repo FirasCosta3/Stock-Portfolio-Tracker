@@ -28,7 +28,6 @@ def search_index(search_results, index, currency):
         stock_info.append(currency)
         stock_info.append(stock_currency)
         current_price = stock_ticker.history(period="1d")
-        print(current_price)
         stock_info.append(float(f"{current_price["Close"].iloc[-1]:.2f}"))
         return stock_info
     

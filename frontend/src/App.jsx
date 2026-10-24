@@ -1,8 +1,9 @@
-import {PieChart} from './components/Pie.jsx';
-import {useState, useEffect} from 'react'
-import './App.css';
-import {Currency_buttons} from './components/currencies.jsx';
-import {Currencies} from './constants/currencies.js'
+import {PieChart} from "./components/Pie.jsx";
+import {useState, useEffect} from "react";
+import "./App.css";
+import {Currency_buttons} from "./components/currencies.jsx";
+import {Currencies} from "./constants/currencies.js";
+import {LineGraph} from "./components/line.jsx";
 
 function App() {
         const [portfolioData, setPortfolioData] = useState(null);
@@ -21,11 +22,15 @@ function App() {
         const [portfolioValue, setPortfolioValue] = useState("");
         const [stockPurchase, setStockPurchase] = useState("");
         const [stockCurrency, setStockCurrency] = useState("");
-        const [tradeError, setTradeError] = useState("")
+        const [graphData, setGraphData] = useState("");
+        const [graphStockName, setGraphStockName] = useState("");
+        const [stockFacts, setStockFacts] = useState("");
+        const [tradeError, setTradeError] = useState("");
+        const [bestWorst, setBestWorst] = useState("");
         const [currency, currencySet] = useState(() => {
             const saved = localStorage.getItem("currency")
             return saved ? saved : "GBP";
-        });
+        });  
         const [chartSymbol, setChartSymbol] = useState(() => {
             const saved = localStorage.getItem("symbol")
             return saved? saved : "£"
@@ -44,6 +49,12 @@ function App() {
             const data = await response.json();
             if (data.status === 200) {
                 const portfolioData = data.data
+                const stockGraph = data.stock_graph
+                setGraphData(stockGraph[0])
+                setStockFacts(stockGraph[1])
+                setBestWorst(stockGraph[1][0])
+                console.log(stockGraph[1])
+                setGraphStockName(stockGraph[2])
                 setPortfolioData(portfolioData[0])
                 setPortfolioValue(portfolioData[1])
                 setChartSymbol(localStorage.getItem("symbol") || "£" )
@@ -116,7 +127,6 @@ function App() {
             location.reload()
         }
     }
-
     const sendTrade = async (e) => {
         e.preventDefault();
         if (buyValue && tradeValue){
@@ -171,7 +181,10 @@ function App() {
     <div id="page-divider">
         <div id="stock-graph-div">
             <div id="graph-title">
-                <h1 id="best-worst" className="main-font">Best performing stock of the day</h1>
+                <div id="line-title">
+                    <h1 id="best-worst" className="main-font">{bestWorst} performer today</h1>
+                </div>
+                <LineGraph graphData = {graphData}/>
             </div>
         </div>
 

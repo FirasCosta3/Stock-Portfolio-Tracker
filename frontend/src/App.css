@@ -19,7 +19,7 @@ body{
 }   
 
 .main-font{
-    font-family: 'Inter', sans-serif;
+    font-family: sans-serif;
     font-size: 19px;
     letter-spacing: -1px;
     font-weight: 600;
@@ -53,6 +53,7 @@ body{
 }
 
 #chart-sizing{
+    margin: auto;
     width: 90%;
     height: 90%;
 }
@@ -73,10 +74,11 @@ body{
 }
 
 #stock-graph-div{
-    margin-right: auto;
-    width: 50%;
-    border: green solid 1px;
     box-sizing: border-box;
+    margin-left: auto;
+    width: 50%;
+    height: auto;
+    border: green solid 1px;
 }
 
 .currency-button{
@@ -113,6 +115,7 @@ body{
     display: flex;
     position: absolute;
     flex-direction: column;
+    background: black;
     top: 20px;
     transition: 0.3s ease, opacity 0.3s ease;
     opacity: 0;
@@ -421,9 +424,6 @@ body{
 }
 
 #graph-title{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     margin-top: 0px;
     padding: 0;
     margin-bottom: 0;
@@ -432,4 +432,14 @@ body{
 
 #best-worst{
     font-size: 34px;
+}
+
+#line-title{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0px;
+    padding: 0;
+    margin-bottom: 0;
+    padding: 0 1rem;
 }
