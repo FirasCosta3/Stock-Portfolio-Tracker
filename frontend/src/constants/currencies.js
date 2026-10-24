@@ -1,4 +1,3 @@
-
 export const Currencies ={
     "GBP": "£",
     "EUR": "€",

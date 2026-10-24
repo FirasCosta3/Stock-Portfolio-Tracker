@@ -7,7 +7,7 @@ ChartJS.register(Tooltip, Legend, ArcElement);
     };
 
 export const PieChart = ({portfolio, symbol}) => {
-    if (!portfolio || !portfolio || Object.keys(portfolio).length === 0){
+    if (!portfolio || Object.keys(portfolio).length === 0){
         return <p className="main-font" id="loading-data">Loading your data...</p>
     }
     const options = {
@@ -18,20 +18,19 @@ export const PieChart = ({portfolio, symbol}) => {
                 backgroundColor: "#38B521",
                 titleColor: "black",
                 bodyColor: "black",
-                cornerRadius: 8,
-                padding: 9,
-                fontSize: 30,
+                cornerRadius: 9,
+                padding: 7,
                 titleFont: {
                     family: "sans-serif",
-                    size: 22,  
+                    size: 16,  
                 },
                 bodyFont: {
                     family: "sans-serif",
-                    size: 18,
+                    size: 16,
                 },
                 callbacks: {
                     label: function (value){
-                        return (` ${symbol}`+value.raw).toLocaleString("en-GB", {
+                        return ` ${symbol}`+(value.raw).toLocaleString("en-GB", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                         })

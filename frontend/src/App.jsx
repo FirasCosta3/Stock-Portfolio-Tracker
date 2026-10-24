@@ -27,6 +27,7 @@ function App() {
         const [stockFacts, setStockFacts] = useState("");
         const [tradeError, setTradeError] = useState("");
         const [bestWorst, setBestWorst] = useState("");
+        const [reset, setReset] = useState(false)
         const [currency, currencySet] = useState(() => {
             const saved = localStorage.getItem("currency")
             return saved ? saved : "GBP";
@@ -53,7 +54,6 @@ function App() {
                 setGraphData(stockGraph[0])
                 setStockFacts(stockGraph[1])
                 setBestWorst(stockGraph[1][0])
-                console.log(stockGraph[1])
                 setGraphStockName(stockGraph[2])
                 setPortfolioData(portfolioData[0])
                 setPortfolioValue(portfolioData[1])
@@ -184,7 +184,7 @@ function App() {
                 <div id="line-title">
                     <h1 id="best-worst" className="main-font">{bestWorst} performer today</h1>
                 </div>
-                <LineGraph graphData = {graphData}/>
+                <LineGraph symbol = {chartSymbol} graphData = {graphData}/>
             </div>
         </div>
 
@@ -192,14 +192,28 @@ function App() {
             <div id="pie-buttons">
                 <button id="new-stock" className={"main-font"} onClick={() => setMenuActive(!menuActive)}>+ New stock</button>
                 <h1 id="portfolio-value" className="main-font">Portfolio Value: {chartSymbol}{portfolioValue}</h1>
-                <button id="reset-port" className={"main-font"} onClick={resetPortfolio}>Reset Portfolio</button>
+                <button id="reset-port" className={"main-font"} onClick={() => setReset(!reset)}>Reset Portfolio</button>
+            </div>
+            <div id="confirm-message" className={reset ? "active" : ""}>
+                <button className="cancel-button" onClick={() => setReset(!reset)}>
+                    <svg id="x-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="50" height="50">
+                        <path d="M8.5 8.5 L15.5 15.5 M15.5 8.5 L8.5 15.5" stroke="green" strokeWidth="2" strokeLinecap="round" fill="none"/>
+                    </svg>
+                </button>
+                <div id="confirm-div">
+                    <h1 className="main-font" id="confirm-h">
+                        <span>Resetting is permanent</span>
+                        <span>Confirm to make changes</span>
+                    </h1>
+                    <button className="main-font" id="confirm-reset" onClick={resetPortfolio}>Confirm</button>
+                </div>
             </div>
             <div id="chart-sizing">
                 <PieChart symbol = {chartSymbol} portfolio={portfolioData}/>
             </div>
         </div>
         <div className={menuActive ? "stock-buy active" : "stock-buy"}>
-            <button id="cancel-button" onClick={() => setMenuActive(!menuActive)}>
+            <button className="cancel-button" onClick={() => setMenuActive(!menuActive)}>
                 <svg id="x-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="50" height="50">
                     <path d="M8.5 8.5 L15.5 15.5 M15.5 8.5 L8.5 15.5" stroke="green" strokeWidth="2" strokeLinecap="round" fill="none"/>
                 </svg>
