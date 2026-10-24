@@ -6,6 +6,7 @@ from portfolio import Portfolio
 from search import get_details, search_stock, search_index
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
+from statistics import percentage_changes, high_or_low, stock_graph
 
 logging.getLogger("yfinance").setLevel(logging.CRITICAL)  # blocks non-critical errors like 404 when user inputs invalid ticker
 
@@ -24,11 +25,16 @@ def portfolio():
     grouped_stocks = my_portfolio.get_grouped_stocks()
     if not grouped_stocks:
         return jsonify({"status": 404, "data": []})
+    stock_tickers = my_portfolio.stock_tickers() 
+    percentages = percentage_changes(stock_tickers) # finding highest or lowest stock of the day
+    statistics = high_or_low(percentages)
+    stock_of_day = stock_graph(statistics, stock_tickers, "1d")
+    print(stock_of_day)
     average_price = my_portfolio.price_average(grouped_stocks)
     db_data = my_portfolio.display_portfolio(average_price, currency, currency_symbols)
-    return jsonify({"data": db_data, "status": 200})
+    return jsonify({"data": db_data, "status": 200, "stock_graph": stock_of_day})
 
-@app.route("/stocks", methods = ["POST"]) # retreive stock searches that is picked through the search
+@app.route("/stocks", methods = ["POST"]) # retreive stock searches that is chosen through the search
 def stocks():
     data = request.get_json()
     stock_choice = data.get("search")

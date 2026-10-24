@@ -7,33 +7,13 @@ ChartJS.register(Tooltip, Legend, ArcElement, Title);
     };
 
 export const PieChart = ({portfolio, symbol}) => {
-    if (!portfolio || !portfolio[0] || Object.keys(portfolio[0]).length === 0){
+    if (!portfolio || !portfolio || Object.keys(portfolio).length === 0){
         return <p className="main-font" id="loading-data">Loading your data...</p>
     }
-    const portfolio_value = portfolio[1]
     const options = {
         responsive: true,
-        plugins: {
-            title: {
-                display: true,
-                text: "Portfolio Value: "+symbol+portfolio_value,
-                color: "green",             
-                font: {
-                    size: 33,
-                    weight: "bold",
-                },
-                padding:{
-                  top: 30,
-                  bottom: 20,
-                }
-            },
-            layout: {
-                padding: 35,
-            }
-
-        }
     };
-    const portfolio_data = portfolio[0]
+    const portfolio_data = portfolio
     const labels = Object.keys(portfolio_data)
     const stockValues = Object.values(portfolio_data)
     const investedAmount = stockValues.map((stock) => stock[2])
@@ -47,7 +27,7 @@ export const PieChart = ({portfolio, symbol}) => {
                 borderColor: "#3DDC97",
                 backgroundColor: dynamicColors,
                 hoverOffset: 35,
-                radius: "92%",
+                radius: "90%",
             }
         ]
     }

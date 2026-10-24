@@ -18,6 +18,7 @@ function App() {
         const [stockIndex, setStockIndex] = useState("");
         const [desiredStock, setDesiredStock] = useState("");
         const [stockInfo, setStockInfo] = useState("");
+        const [portfolioValue, setPortfolioValue] = useState("");
         const [stockPurchase, setStockPurchase] = useState("");
         const [stockCurrency, setStockCurrency] = useState("");
         const [tradeError, setTradeError] = useState("")
@@ -42,13 +43,16 @@ function App() {
             });
             const data = await response.json();
             if (data.status === 200) {
-                setPortfolioData(data.data)
+                const portfolioData = data.data
+                setPortfolioData(portfolioData[0])
+                setPortfolioValue(portfolioData[1])
                 setChartSymbol(localStorage.getItem("symbol") || "£" )
         };
         }
         useEffect(() => {
             localStorage.setItem("currency", currency)
             sendPortfolioData(currency);
+            
         }, [currency])
     function saveCurrency(name, symbol){
         localStorage.setItem("currency", name)
@@ -56,6 +60,10 @@ function App() {
         currencySet(name)
         setCurrencies(false)
     }
+
+    useEffect(() => {
+        
+    }, [currentPrice])
 
     const findStock = async (e) => {
         e.preventDefault();
@@ -149,6 +157,7 @@ function App() {
         setFoundStocks([]);
         setDesiredStock(foundStocks[index])
         setStockIndex(index)
+        
     }
 
     return (
@@ -159,55 +168,68 @@ function App() {
             <Currency_buttons curClass={showCurrencies ? "currencies active" : "currencies"} currentPick={saveCurrency}/>
         </div>
     </nav>
-    <div className="pie-chart">
-        <button id="new-stock" className={"main-font"} onClick={() => setMenuActive(!menuActive)}>+ New stock</button>
-        <button id="reset-port" className={"main-font"} onClick={resetPortfolio}>Reset Portfolio</button>
-        <PieChart symbol = {chartSymbol} portfolio={portfolioData}/>
-    </div>
-    <div className={menuActive ? "stock-buy active" : "stock-buy"}>
-        <button id="cancel-button" onClick={() => setMenuActive(!menuActive)}>
-            <svg id="x-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="50" height="50">
-                <path d="M8.5 8.5 L15.5 15.5 M15.5 8.5 L8.5 15.5" stroke="green" strokeWidth="2" strokeLinecap="round" fill="none"/>
-            </svg>
-        </button>
-        <div id="search-div">
-            <form id="stock-search-form" onSubmit={(e) => {findStock(e); setDesiredStock("")}}>
-                <input  autoComplete="off" onChange={(e) => setStockSearch(e.target.value)} id="stock-search" placeholder="Enter a stock or ticker" type="text"></input>
-            </form>
-                {foundStocks?.map((stock, index) => {
-                    return (
-                        <div key={index} className="search-button-div">
-                            <button type="button" className="search-buttons" onClick={() => changeSearches(index)}>{stock}</button>
-                        </div>
-                    );
-                })}
-                <div id ="show-desired" className={desiredStock ? "active" : ""}>
-                    <h1 id="desired-title" className="main-font">{desiredStock}</h1>
-                    <h1 id="current-price" className="main-font">Live price: {stockCurrency}{currentPrice}</h1>
-                    <div id="buy-sell-div">
-                        <button onClick={() => setTradeType("buy")} className={tradeType === "buy" ? "buy-sell active" : "buy-sell"}>Buy</button>
-                        <button onClick={() => setTradeType("sell")} className={tradeType === "sell" ? "buy-sell active" : "buy-sell"}>Sell</button>
-                        <button onClick={() => setTradeType("overide")} className={tradeType === "overide" ? "buy-sell active" : "buy-sell"}>Overide Stock</button>
-                    </div>  
-                    <div id="stock-details" className={tradeType ? "active": ""}>
-                        <div id="trade-div">
-                            <label htmlFor="trade-choice" className="main-font" id="trade-label">Value</label>
-                            <form onSubmit={(e) => sendTrade(e)} className="main-font trade-value">
-                                <span className="pound">{chartSymbol}</span>
-                                <input onChange={(e) => setTradeValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-choice" placeholder="0"></input>
-                            </form>
+    <div id="page-divider">
+        <div id="stock-graph-div">
+            <div id="graph-title">
+                <h1 id="best-worst" className="main-font">Best performing stock of the day</h1>
+            </div>
+        </div>
+
+        <div className="pie-chart-div">
+            <div id="pie-buttons">
+                <button id="new-stock" className={"main-font"} onClick={() => setMenuActive(!menuActive)}>+ New stock</button>
+                <h1 id="portfolio-value" className="main-font">Portfolio Value: {chartSymbol}{portfolioValue}</h1>
+                <button id="reset-port" className={"main-font"} onClick={resetPortfolio}>Reset Portfolio</button>
+            </div>
+            <div id="chart-sizing">
+                <PieChart symbol = {chartSymbol} portfolio={portfolioData}/>
+            </div>
+        </div>
+        <div className={menuActive ? "stock-buy active" : "stock-buy"}>
+            <button id="cancel-button" onClick={() => setMenuActive(!menuActive)}>
+                <svg id="x-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="50" height="50">
+                    <path d="M8.5 8.5 L15.5 15.5 M15.5 8.5 L8.5 15.5" stroke="green" strokeWidth="2" strokeLinecap="round" fill="none"/>
+                </svg>
+            </button>
+            <div id="search-div">
+                <form id="stock-search-form" onSubmit={(e) => {findStock(e); setDesiredStock("")}}>
+                    <input  autoComplete="off" onChange={(e) => setStockSearch(e.target.value)} id="stock-search" placeholder="Enter a stock or ticker" type="text"></input>
+                </form>
+                    {foundStocks?.map((stock, index) => {
+                        return (
+                            <div key={index} className="search-button-div">
+                                <button type="button" className="search-buttons" onClick={() => changeSearches(index)}>{stock}</button>
+                            </div>
+                        );
+                    })}
+                    <div id ="show-desired" className={desiredStock && currentPrice ? "active" : ""}>
+                        <h1 id="desired-title" className="main-font">{desiredStock}</h1>
+                        <h1 id="current-price" className="main-font">Live price: {stockCurrency}{currentPrice}</h1>
+                        <div id="buy-sell-div">
+                            <button onClick={() => setTradeType("buy")} className={tradeType === "buy" ? "buy-sell active" : "buy-sell"}>Buy</button>
+                            <button onClick={() => setTradeType("sell")} className={tradeType === "sell" ? "buy-sell active" : "buy-sell"}>Sell</button>
+                            <button onClick={() => setTradeType("overide")} className={tradeType === "overide" ? "buy-sell active" : "buy-sell"}>Overide Stock</button>
                         </div>  
-                        <div id="price-div">
-                            <label htmlFor="trade-p" className="main-font" id="trade-price">Price Average</label>
-                            <form onSubmit={(e) => sendTrade(e)} className="main-font trade-value">
-                                <span className="pound">{stockCurrency}</span>
-                                <input onChange={(e) => setBuyValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-p" placeholder="0"></input>
-                            </form>
+                        <div id="stock-details" className={tradeType ? "active": ""}>
+                            <div id="trade-div">
+                                <label htmlFor="trade-choice" className="main-font" id="trade-label">Value</label>
+                                <form onSubmit={(e) => sendTrade(e)} className="main-font trade-value">
+                                    <span className="pound">{chartSymbol}</span>
+                                    <input onChange={(e) => setTradeValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-choice" placeholder="0"></input>
+                                </form>
+                            </div>  
+                            <div id="price-div">
+                                <label htmlFor="trade-p" className="main-font" id="trade-price">Price Average</label>
+                                <form onSubmit={(e) => sendTrade(e)} className="main-font trade-value">
+                                    <span className="pound">{stockCurrency}</span>
+                                    <input onChange={(e) => setBuyValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-p" placeholder="0"></input>
+                                </form>
+                            </div>
+                            <p id="error-message" className={errorMessage ? "active main-font": ""}>{tradeError}</p>
                         </div>
-                        <p id="error-message" className={errorMessage ? "active main-font": ""}>{tradeError}</p>
                     </div>
                 </div>
-            </div>
+        </div>
     </div>
         </>
         );
