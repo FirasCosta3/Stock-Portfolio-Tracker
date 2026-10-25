@@ -22,7 +22,7 @@
 2. Run Backend:
    ```bash
    python3 main.py
-  ```
+   ```
 
 3. Run Frontend:
    ```bash
