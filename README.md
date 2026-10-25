@@ -13,6 +13,11 @@
 - **Trading System:** Stores trades in a local SQLite database (`Portfolio.db`), logging buys as positive values and sells as negative, replacing the current stock value if you choose to override old trades.
 - **Smart Profit Tracking:** Keeps your original trades intact when you trade, meaning your ROI and percentage updates stay mathematically accurate.
 
+## Tech Stack
+* **Backend:** Python, Flask
+* **Database:** SQLite3
+* **Frontend:** React.js, Chart.js
+
 1. Install dependencies:
    ```bash
    pip install -r requirements.txt
