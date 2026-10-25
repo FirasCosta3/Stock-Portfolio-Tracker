@@ -75,7 +75,8 @@ def change_graph(stock):
 def graph_data(ticker, time_period):
     interval = intervals[time_period]
     ticker_history = ticker.history(period = time_period, interval = interval)
-    price_info = ticker_history.Open
+    price_info = ticker_history.Close
+    print(price_info)
     price_data = {}
     for time_stamp in price_info.index:
         date = time_stamp.strftime("%d/%m at %H:%M") if time_period != "max" and time_period != "6mo" else time_stamp.strftime("%d/%m/%y at %H:%M")
