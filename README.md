@@ -22,7 +22,7 @@
   ```bash
   python3 main.py
 
-3. Run Frontend
+3. Run Frontend:
   ```bash
   cd frontend
   npm run dev
