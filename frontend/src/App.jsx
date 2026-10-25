@@ -155,37 +155,45 @@ function App() {
     }
     const sendTrade = async (e) => {
         e.preventDefault();
-        if (buyValue && tradeValue){
-        const response = await fetch("http://127.0.0.1:5000/trade", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            type: tradeType,
-            trade: tradeValue,
-            info: stockInfo,
-            currency: currency,
-            price: buyValue
-            })
-        });
-        const data = await response.json()
-        if (data.status === 404){
-            if (data.error === "high")
-                setTradeError(`Max price was ${stockCurrency}${data.max_price} \n The price was never ${stockCurrency}${buyValue}`)
-            setErrorMessage(true)
-        }
-        else if (data.status === 200){
-            setStockPurchase(data.purchases)
-            location.reload()
-          }
-
-    }
-        else {
+        if (buyValue > 0){
+            if (buyValue && tradeValue){
+            const response = await fetch("http://127.0.0.1:5000/trade", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                type: tradeType,
+                trade: tradeValue,
+                info: stockInfo,
+                currency: currency,
+                price: buyValue
+                })
+            });
+            const data = await response.json()
+            if (data.status === 404){
+                if (data.error === "high")
+                    setTradeError(`Max price was ${stockCurrency}${data.max_price} \n The price was never ${stockCurrency}${buyValue}`)
+                    setErrorMessage(true)
+                if (data.error === "sold"){
+                    setTradeError(`At ${stockCurrency}${buyValue} your holdings is ${stockCurrency}${data.total.toLocaleString("en-GB")}\n You couldn't have sold ${stockCurrency}${data.value.toLocaleString("en-GB")}`)
+                }
+            }
+            else if (data.status === 200){
+                setStockPurchase(data.purchases)
+                location.reload()
+            }
+            
+        }        
+    }   
+        else if(!buyValue || !tradeValue){
             setTradeError("Make sure no fields are blank")
-            setErrorMessage(true)
         }
-};
+        else if(buyValue <= 0){
+            setTradeError("Enter a number greater than 0")
+            }
+        setErrorMessage(true)
+    }
 
     const currency_cur = localStorage.getItem("currency") || "GBP"
     const currency_symb = localStorage.getItem("symbol") || "£"
@@ -282,7 +290,9 @@ function App() {
                                     <input onChange={(e) => setBuyValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-p" placeholder="0"></input>
                                 </form>
                             </div>
-                            <p id="error-message" className={errorMessage ? "active main-font": ""}>{tradeError}</p>
+                            <div id="error-div">
+                                <p id="error-message" className={errorMessage ? "active main-font": ""}>{tradeError}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -290,5 +300,5 @@ function App() {
     </div>
         </>
         );
-}
+    }
 export default App;

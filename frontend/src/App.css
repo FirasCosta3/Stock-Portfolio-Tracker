@@ -447,7 +447,7 @@ body{
     margin-top: 0px;
     padding: 0;
     margin-bottom: 0;
-    padding: 0 7.3rem;
+    padding: 0 4rem;
 }
 
 #confirm-message{
@@ -506,7 +506,7 @@ body{
 }
 
 #percentage-change.active{
-    color: red;
+    color: #B31D1D;
 }
 
 .period-button{
@@ -536,4 +536,9 @@ body{
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+#error-div{
+    text-align: center;
+    margin-bottom: 40px;
 }

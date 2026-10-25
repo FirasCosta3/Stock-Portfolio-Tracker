@@ -1,5 +1,6 @@
 import yfinance as yf
 import logging
+import time
 from database import Database
 from stock import currency_symbols
 from portfolio import Portfolio
@@ -17,6 +18,7 @@ stock_search = ""
 
 @app.route("/portfolio", methods = ["POST"]) # load portfolio on web refresh
 def portfolio():
+    start = time.perf_counter()
     data = request.get_json()
     global currency
     currency = data.get("currency", "GBP")
@@ -35,6 +37,8 @@ def portfolio():
     graph_list.pop()
     average_price = my_portfolio.price_average(grouped_stocks)
     db_data = my_portfolio.display_portfolio(average_price, currency, currency_symbols)
+    end = time.perf_counter()
+    print(start, end,"end", (end-start),"s")
     return jsonify({"data": db_data, "status": 200, "stock_graph": graph_list})
 
 @app.route("/stocks", methods = ["POST"]) # retreive stock searches that is chosen through the search
@@ -59,38 +63,36 @@ def trade_details():
  
 @app.route("/trade", methods = ["POST"]) # user trade request
 def trade(): 
-    data = request.get_json() 
-    trade_type = data.get("type")
-    trade_value = data.get("trade")
-    stock_info = data.get("info")
-    user_currency = data.get("currency")
-    trade_price = data.get("price")
+    data = request.get_json()
+    trade_type, trade_value, stock_info, user_currency, trade_price = data.values()
     db = Database()
     my_portfolio = Portfolio(db)
     current_portfolio = my_portfolio.get_grouped_stocks()
     response = get_details(stock_info, trade_value, trade_price, trade_type, user_currency, current_portfolio) # stocks details
-    purchases = response.get("purchases")
-    symbol = stock_info[3]
-    if trade_type == "sell": # if the user chose sell
-        negative_sales = [(-amount, price) for amount, price in purchases]
-        db.db_assign(symbol, negative_sales)
-        my_portfolio = Portfolio(db)
-    elif trade_type == "buy":   # buy trade
-        db.db_assign(symbol, purchases)
-        my_portfolio = Portfolio(db)
-    elif trade_type == "overide": # full stock overide / removing old trades for the stock
+    if response["status"] == 200:
+        purchases = response.get("purchases")
         symbol = stock_info[3]
-        trade_value = float(trade_value)
-        trade_price = float(trade_price)
-        stock_ticker = yf.Ticker(symbol)
-        max_price = stock_ticker.info.get("allTimeHigh", 0)
-        if trade_value > 0 and (trade_price > 0 and (max_price == 0 or trade_price <= max_price)):
-            db.db_clear_symbol(symbol)
-            direct_purchase = [(trade_value, trade_price)]
-            db.db_assign(symbol, direct_purchase)
-        else:
-            direct_purchase = [(trade_value, trade_price)]
-            db.db_assign(symbol, direct_purchase)
+        if trade_type == "sell": # if the user chose sell
+            print(purchases)
+            negative_sales = [(-amount, price) for amount, price in purchases]
+            db.db_assign(symbol, negative_sales)
+            my_portfolio = Portfolio(db)
+        elif trade_type == "buy":   # buy trade
+            db.db_assign(symbol, purchases)
+            my_portfolio = Portfolio(db)
+        elif trade_type == "overide": # full stock overide / removing old trades for the stock
+            symbol = stock_info[3]
+            trade_value = float(trade_value)
+            trade_price = float(trade_price)
+            stock_ticker = yf.Ticker(symbol)
+            max_price = stock_ticker.info.get("allTimeHigh", 0)
+            if trade_value > 0 and (trade_price > 0 and (max_price == 0 or trade_price <= max_price)):
+                db.db_clear_symbol(symbol)
+                direct_purchase = [(trade_value, trade_price)]
+                db.db_assign(symbol, direct_purchase)
+            else:
+                direct_purchase = [(trade_value, trade_price)]
+                db.db_assign(symbol, direct_purchase)
     return response
 
 @app.route("/reset", methods = ["POST"])
@@ -106,7 +108,6 @@ def time_period():
     stock = data.get("stock")
     percentage, ticker = stock_percent(stock, time_period)
     price_data = graph_data(ticker, time_period)
-    print(percentage)
     return jsonify({"status": 200, "price_data": price_data, "percentage": percentage})
 
 if __name__ == "__main__":

@@ -46,17 +46,19 @@ def get_details(stock_info, user_amount, share_p, trade_type, user_currency, cur
             amount_invested = float(user_amount) * rate
         while True:
             share_price = float(share_p)
+            purchases.append((amount_invested, share_price))  # two brackets to store as a tuple
+            if share_price > max_price:
+                return {"status": 404, "error": "high", "max_price": max_price}
             if trade_type == "sell":
                 total_shares = sum((row[1] / row[2]) for row in current_portfolio if symbol in row)
                 shares_2sell = amount_invested / share_price  # calculate the current value stock holdings not the amount deposited
                 total_value = total_shares * share_price
                 if shares_2sell > total_shares:
-                    return {"status": 404, "error": "sold", "total": total_value, "price": share_price}
-            if trade_type == "buy":
+                    return {"status": 404, "error": "sold", "total": float(f"{total_value:.2f}"), "value": float(f"{amount_invested:.2f}")} # not enough shares
+                if shares_2sell < total_shares:
+                    return {"status": 200, "total": total_value, "price": share_price, "purchases": purchases}
+            if trade_type == "buy" or trade_type == "overide":
                 if share_price > 0 and (max_price == 0 or share_price <= max_price):
-                    purchases.append((amount_invested, share_price))  # two brackets to store as a tuple
-                    return {"status": 200, "purchases": purchases}
-                elif share_price < 0:
-                    return {"status": 404, "error": "zero}"}
-                elif share_price > max_price:
-                    return {"status": 404, "error": "high", "max_price": max_price}
+                    return {"status": 200, "purchases": purchases} # successful purchase
+
+                
