@@ -18,7 +18,7 @@ export const PieChart = ({portfolio, symbol}) => {
                 backgroundColor: "#38B521",
                 titleColor: "black",
                 bodyColor: "black",
-                cornerRadius: 9,
+                cornerRadius: 8,
                 padding: 7,
                 titleFont: {
                     family: "sans-serif",
@@ -43,7 +43,6 @@ export const PieChart = ({portfolio, symbol}) => {
     const labels = Object.keys(portfolio_data)
     const stockValues = Object.values(portfolio_data)
     const investedAmount = stockValues.map((stock) => stock[2])
-    const priceLabel = investedAmount.map((val) => `${symbol}${val.toFixed(2)}`)
     const dynamicColors = labels.map(() => randomColor());
     const PieData = {
         labels: labels,

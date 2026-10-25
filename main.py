@@ -6,7 +6,7 @@ from portfolio import Portfolio
 from search import get_details, search_stock, search_index
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from statistics import percentage_changes, high_or_low, stock_graph
+from statistics import percentage_changes, high_or_low, stock_graph, stock_percent, change_graph, graph_data
 
 logging.getLogger("yfinance").setLevel(logging.CRITICAL)  # blocks non-critical errors like 404 when user inputs invalid ticker
 
@@ -28,10 +28,14 @@ def portfolio():
     stock_tickers = my_portfolio.stock_tickers() 
     percentages = percentage_changes(stock_tickers) # finding highest or lowest stock of the day
     statistics = high_or_low(percentages)
-    stock_of_day = stock_graph(statistics, stock_tickers, "1d")
+    graph_list = stock_graph(statistics, stock_tickers)
+    ticker = graph_list[2]
+    price_data = graph_data(ticker, "1d")
+    graph_list.insert(0, price_data)
+    graph_list.pop()
     average_price = my_portfolio.price_average(grouped_stocks)
     db_data = my_portfolio.display_portfolio(average_price, currency, currency_symbols)
-    return jsonify({"data": db_data, "status": 200, "stock_graph": stock_of_day})
+    return jsonify({"data": db_data, "status": 200, "stock_graph": graph_list})
 
 @app.route("/stocks", methods = ["POST"]) # retreive stock searches that is chosen through the search
 def stocks():
@@ -94,6 +98,16 @@ def reset_portfolio():
     db = Database()
     db.df_reset()
     return jsonify({"status": 200})
+
+@app.route("/timePeriod", methods = ["POST"])
+def time_period():
+    data = request.get_json()
+    time_period = data.get("period")
+    stock = data.get("stock")
+    percentage, ticker = stock_percent(stock, time_period)
+    price_data = graph_data(ticker, time_period)
+    print(percentage)
+    return jsonify({"status": 200, "price_data": price_data, "percentage": percentage})
 
 if __name__ == "__main__":
     app.run(port = 5000, debug=True)

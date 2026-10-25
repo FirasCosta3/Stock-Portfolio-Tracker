@@ -2,9 +2,9 @@ import yfinance as yf
 
 
 intervals = {"1d": "15m",
-             "7d": "90m",
-             "1m": "4h",
-             "6m": "1d",
+             "7d": "60m",
+             "1mo": "4h",
+             "6mo": "1d",
              "max": "1mo"}
 
 def percentage_changes(stocks):
@@ -18,10 +18,8 @@ def percentage_changes(stocks):
         current_data = ticker.history(period="1d")
         open_price = current_data.Open.iloc[-1]
         close_price = current_data.Close.iloc[-1]
-        total_change = close_price - open_price
-        percentage_change = (total_change / open_price)*100
+        percentage_change = ((close_price - open_price)/open_price)* 100
         highest[i] = round(float(percentage_change),2)
-        print(open_price, "O", close_price, "C")
     return highest
 
 def high_or_low(percentages):
@@ -42,19 +40,45 @@ def high_or_low(percentages):
             lowest.append(i)
     word = [positive, highest] if positive == "Best" else [positive, lowest]
     ind = list(percentages.values()).index(word[1][0])
+    sign = "-" if word[1][0] < 0 else "+"
+    word[1][0] = f"{sign}{word[1][0]}%"
     return [word, ind]
 
-def stock_graph(statistics, stock_tickers, scale):
+def stock_graph(statistics, stock_tickers):
     ind = statistics[1]
     stock_of_day = stock_tickers[ind][0]
     ticker = yf.Ticker(stock_of_day)
-    interval = intervals[scale]
-    ticker_history = ticker.history(period = scale, interval = interval)
+    stock_currency = ticker.info.get("currency", "£")
+    stock_name = ticker.info.get("shortname")
+    if not stock_name:
+        stock_name = ticker.info.get("displayName")
+    return [statistics[0], [stock_name, stock_currency], ticker]
+
+def stock_percent(stock, time_period): # stock name to ticker symbol
+    search = yf.Search(stock, max_results = 1)
+    tkr = search.quotes[0]["symbol"]
+    ticker = yf.Ticker(tkr)
+    period_history = ticker.history(period = time_period)
+    close_price = period_history.Close.iloc[-1]
+    open_price = period_history.Open.iloc[0]
+    percentage = ((close_price - open_price)/open_price)*100
+    symbol = "" if percentage < 0 else "+"
+    percentage = f"{symbol}{percentage:.2f}%"
+    return [percentage, ticker]
+
+def change_graph(stock):
+    ticker = yf.Ticker(stock)
+    stock_name = ticker.info.get("shortname")
+    if not stock_name:
+        stock_name = ticker.info.get("displayName")
+
+def graph_data(ticker, time_period):
+    interval = intervals[time_period]
+    ticker_history = ticker.history(period = time_period, interval = interval)
     price_info = ticker_history.Open
     price_data = {}
     for time_stamp in price_info.index:
-        time = time_stamp.strftime("%H:%M")
-        price = f"{round(float(price_info.loc[time_stamp]), 2): .2f}"
-        price_data[time] = float(price)
-    print(price_data)
-    return [price_data, statistics[0], stock_of_day]
+        date = time_stamp.strftime("%d/%m at %H:%M") if time_period != "max" and time_period != "6mo" else time_stamp.strftime("%d/%m/%y at %H:%M")
+        price = f"{round(float(price_info[time_stamp]), 2): .2f}"
+        price_data[date] = price
+    return price_data

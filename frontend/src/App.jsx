@@ -4,6 +4,8 @@ import "./App.css";
 import {Currency_buttons} from "./components/currencies.jsx";
 import {Currencies} from "./constants/currencies.js";
 import {LineGraph} from "./components/line.jsx";
+import {PeriodButtons} from "./components/periods.jsx";
+import {periods} from "./constants/periods.js"
 
 function App() {
         const [portfolioData, setPortfolioData] = useState(null);
@@ -27,6 +29,8 @@ function App() {
         const [stockFacts, setStockFacts] = useState("");
         const [tradeError, setTradeError] = useState("");
         const [bestWorst, setBestWorst] = useState("");
+        const [percentageChange, setPercentageChange] = useState("");
+        const [graphStockCurrency, setGraphStockCurrency] = useState("");
         const [reset, setReset] = useState(false)
         const [currency, currencySet] = useState(() => {
             const saved = localStorage.getItem("currency")
@@ -54,7 +58,10 @@ function App() {
                 setGraphData(stockGraph[0])
                 setStockFacts(stockGraph[1])
                 setBestWorst(stockGraph[1][0])
-                setGraphStockName(stockGraph[2])
+                setGraphStockName(stockGraph[2][0])
+                const stockCur = stockGraph[2][1]
+                setGraphStockCurrency(Currencies[stockCur])
+                setPercentageChange(stockGraph[1][1][0])
                 setPortfolioData(portfolioData[0])
                 setPortfolioValue(portfolioData[1])
                 setChartSymbol(localStorage.getItem("symbol") || "£" )
@@ -117,6 +124,25 @@ function App() {
         }
         tradeDetails();
         }, [stockIndex])
+
+    const changePeriod = async (time) => {
+        const response = await fetch("http://127.0.0.1:5000/timePeriod", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                period: time,
+                stock: graphStockName,
+            })
+        });
+        const data = await response.json()
+        if (data.status === 200){
+            setGraphData(data.price_data)
+            setPercentageChange(data.percentage)
+        }
+    }
+
 
     const resetPortfolio = async () => {
         const response = await fetch("http://127.0.0.1:5000/reset", {
@@ -182,9 +208,13 @@ function App() {
         <div id="stock-graph-div">
             <div id="graph-title">
                 <div id="line-title">
-                    <h1 id="best-worst" className="main-font">{bestWorst} performer today</h1>
+                    <h1 id="best-worst" className="main-font">{bestWorst} performer today:   {graphStockName}</h1>
+                    <h1 className={percentageChange?.includes("-") ? "main-font active" : "main-font"} id="percentage-change">{percentageChange}</h1>
                 </div>
-                <LineGraph symbol = {chartSymbol} graphData = {graphData}/>
+                <LineGraph symbol = {graphStockCurrency} graphData = {graphData}/>
+            </div>
+            <div id="periods-division">
+                <PeriodButtons periodChange={changePeriod}/>
             </div>
         </div>
 

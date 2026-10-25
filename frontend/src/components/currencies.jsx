@@ -1,4 +1,3 @@
-import React from 'react';
 import {Currencies} from '../constants/currencies.js';
 import '../App.css'
 

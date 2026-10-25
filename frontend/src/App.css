@@ -1,5 +1,6 @@
 .currency-button,
-.buy-sell
+.buy-sell,
+.period-button
 {
     will-change: transform;
     backface-visibility: hidden;
@@ -446,7 +447,7 @@ body{
     margin-top: 0px;
     padding: 0;
     margin-bottom: 0;
-    padding: 0 1rem;
+    padding: 0 7.3rem;
 }
 
 #confirm-message{
@@ -498,4 +499,41 @@ body{
     flex-direction: column;
     align-items: center;
     font-size: 34px;
+}
+
+#percentage-change{
+    font-size: 26px;
+}
+
+#percentage-change.active{
+    color: red;
+}
+
+.period-button{
+    background: transparent;
+    margin: auto;
+    color: green;
+    border: green solid 2px;
+    width: 80px;
+    border-radius: 6px;
+    font-size: 21px;
+    cursor: pointer;
+    margin: 0 2px;
+    transition: 0.3s ease;
+}
+
+.period-button:hover{
+    transform: scale(1.12);
+}
+
+#periods-div{
+    height: 45px;
+    margin: auto;
+}
+
+#periods-division{
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
