@@ -1,18 +1,20 @@
 import { Pie } from "react-chartjs-2"
 import { Chart as ChartJS, Tooltip, Legend, ArcElement, } from "chart.js"
+import {ExamplePie} from "./examplePie.jsx"
+import {randomColor} from "../constants/randomColor.js"
 
 ChartJS.register(Tooltip, Legend, ArcElement);
- const randomColor = () =>{
-        return "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, "0")
-    };
 
-export const PieChart = ({portfolio, symbol}) => {
+export const PieChart = ({portfolio, symbol, setPortfolioValue}) => {
     if (!portfolio || Object.keys(portfolio).length === 0){
-        return <p className="main-font" id="loading-data">Loading your data...</p>
+        return <ExamplePie symbol={symbol} setPortfolioValue ={setPortfolioValue}/>
     }
     const options = {
         responsive: true,
         plugins:{
+            animation: {
+                duration: 2500,
+            },
             tooltip: {
                 enabled: true,
                 backgroundColor: "#38B521",
@@ -59,4 +61,3 @@ export const PieChart = ({portfolio, symbol}) => {
 
     return <Pie options={options} data={PieData}/>
 };
-

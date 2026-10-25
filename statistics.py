@@ -41,7 +41,7 @@ def high_or_low(percentages):
             lowest.append(i)
     word = [positive, highest] if positive == "Best" else [positive, lowest]
     ind = list(percentages.values()).index(word[1][0])
-    sign = "-" if word[1][0] < 0 else "+"
+    sign = "" if word[1][0] < 0 else "+"
     word[1][0] = f"{sign}{word[1][0]}%"
     return [word, ind]
 

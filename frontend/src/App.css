@@ -1,6 +1,7 @@
 .currency-button,
 .buy-sell,
-.period-button
+#period-button,
+#stock-button
 {
     will-change: transform;
     backface-visibility: hidden;
@@ -41,8 +42,9 @@ body{
 
 #page-divider{
     display: flex;
-    width: 100%;
-    min-width: 0;
+    flex-direction: rows;
+    border: green solid 1px;
+    height: 90%;
 }
 
 .pie-chart-div{
@@ -53,7 +55,7 @@ body{
     box-sizing: border-box;
     margin-left: auto;
     width: 50%;
-    height: auto;
+    height: 100%;
     border: green solid 1px;
 }
 
@@ -80,10 +82,8 @@ body{
 }
 
 #stock-graph-div{
-    box-sizing: border-box;
     margin-left: auto;
     width: 50%;
-    height: auto;
     border: green solid 1px;
 }
 
@@ -436,8 +436,39 @@ body{
     padding: 0 1rem;
 }
 
-#best-worst{
-    font-size: 34px;
+.best-worst{
+    font-size: 30px;
+}
+
+.best-worst.active{
+    opacity: 0;
+    visibility: hidden;
+    z-index: -10;
+    position: absolute;
+}
+
+#best-worst-div{
+    display: flex;
+    border: red solid 1px;
+}
+
+#best-worst-division{
+    display: flex;
+    border: red solid 1px;
+}
+
+#best-worst-div.active{
+    visibility: hidden;
+    position: relative;
+    opacity: 0;
+    z-index: -10;
+}
+
+#best-worst-division.active{
+    visibility: hidden;
+    position: relative;
+    opacity: 0;
+    z-index: -8;
 }
 
 #line-title{
@@ -447,7 +478,8 @@ body{
     margin-top: 0px;
     padding: 0;
     margin-bottom: 0;
-    padding: 0 4rem;
+    padding: 0 3rem;
+    border: pink solid 2px;
 }
 
 #confirm-message{
@@ -509,7 +541,7 @@ body{
     color: #B31D1D;
 }
 
-.period-button{
+#period-button{
     background: transparent;
     margin: auto;
     color: green;
@@ -520,10 +552,15 @@ body{
     cursor: pointer;
     margin: 0 2px;
     transition: 0.3s ease;
+    background: #080A0C;
+    z-index: 2;
 }
 
-.period-button:hover{
-    transform: scale(1.12);
+#period-button.active{
+    transform: scale(1.25);
+    position: relative;
+    border: #055400 solid 2px;
+    z-index: 5;
 }
 
 #periods-div{
@@ -534,6 +571,7 @@ body{
 #periods-division{
     margin-top: 15px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: space-between;
 }
@@ -541,4 +579,34 @@ body{
 #error-div{
     text-align: center;
     margin-bottom: 40px;
+}
+
+#stock-button{
+    margin: auto;
+    color: green;
+    background: transparent;
+    font-size: 20px;
+    border: green solid 3px;
+    border-radius: 7px;
+    padding: 5px;
+    cursor: pointer;
+    width: 250px;
+    padding: 3px 2rem;
+    margin-top: 10px;
+    transition: 0.3s ease;
+}
+
+#stock-button.active{
+    transform: scale(1.12);
+}
+
+#stock-buttons-div{
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+#stock-button-div{
+    visibility: hidden;
+    opacity: 0;
+    z-index: -1;
 }

@@ -38,7 +38,7 @@ def portfolio():
     average_price = my_portfolio.price_average(grouped_stocks)
     db_data = my_portfolio.display_portfolio(average_price, currency, currency_symbols)
     end = time.perf_counter()
-    print(start, end,"end", (end-start),"s")
+    print("fetching portfolio took ",(end-start),"s")
     return jsonify({"data": db_data, "status": 200, "stock_graph": graph_list})
 
 @app.route("/stocks", methods = ["POST"]) # retreive stock searches that is chosen through the search
@@ -104,13 +104,15 @@ def reset_portfolio():
 @app.route("/timePeriod", methods = ["POST"])
 def time_period():
     data = request.get_json()
-    time_period = data.get("period")
-    stock = data.get("stock")
+    percentage, price_data = get_graph(data, time_period)
+    return jsonify({"status": 200, "price_data": price_data, "percentage": percentage})
+
+def get_graph(data, time_period):
+    stock = data["stock"]
+    time_period = data["period"]
     percentage, ticker = stock_percent(stock, time_period)
     price_data = graph_data(ticker, time_period)
-    return jsonify({"status": 200, "price_data": price_data, "percentage": percentage})
+    return percentage, price_data
 
 if __name__ == "__main__":
     app.run(port = 5000, debug=True)
-    
-    

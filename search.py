@@ -24,7 +24,7 @@ def search_index(search_results, index, currency):
         stock_info.append(stock_ticker.info.get("displayName", symbol_choice))
         stock_info.append(stock_ticker.info.get("shortname", "N/A"))
         stock_info.append(symbol_choice)
-        stock_currency = stock_ticker.info.get("currency","N/A")  # gets currency symbol according to the market e.g. US market = $
+        stock_currency = stock_ticker.info.get("currency","N/A")  # gets currency symbol according to the market e.g. US market 
         stock_info.append(currency)
         stock_info.append(stock_currency)
         current_price = stock_ticker.history(period="1d")

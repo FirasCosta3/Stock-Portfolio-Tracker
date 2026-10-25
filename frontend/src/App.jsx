@@ -12,12 +12,15 @@ function App() {
         const [showCurrencies, setCurrencies] = useState(false);
         const [menuActive, setMenuActive] = useState(false);
         const [tradeValue, setTradeValue] = useState("");
+        const [timePeriod, setTimePeriod] = useState("1d");
         const [buyValue, setBuyValue] = useState("");
+        const [example, setExample] = useState("Example");
         const [currentPrice, setCurrentPrice] = useState("");
         const [stockSearch, setStockSearch] = useState("");
         const [errorMessage, setErrorMessage] = useState(false);
         const [foundStocks, setFoundStocks] = useState([]);
         const [tradeType, setTradeType] = useState("");
+        const [graphTitle, setGraphTitle] = useState("");
         const [stockIndex, setStockIndex] = useState("");
         const [desiredStock, setDesiredStock] = useState("");
         const [stockInfo, setStockInfo] = useState("");
@@ -31,6 +34,7 @@ function App() {
         const [bestWorst, setBestWorst] = useState("");
         const [percentageChange, setPercentageChange] = useState("");
         const [graphStockCurrency, setGraphStockCurrency] = useState("");
+        const [differentStock, setDifferentStock] = useState("");
         const [reset, setReset] = useState(false)
         const [currency, currencySet] = useState(() => {
             const saved = localStorage.getItem("currency")
@@ -40,7 +44,6 @@ function App() {
             const saved = localStorage.getItem("symbol")
             return saved? saved : "£"
         })
-
         const sendPortfolioData = async (selectedCurrency) => {
             const response = await fetch("http://127.0.0.1:5000/portfolio", {
                 method: "POST",
@@ -50,10 +53,10 @@ function App() {
                 body: JSON.stringify({
                     currency: selectedCurrency
                 })
-            });
+            });                
             const data = await response.json();
             if (data.status === 200) {
-                const portfolioData = data.data
+                const fetchedPortfolioData = data.data
                 const stockGraph = data.stock_graph
                 setGraphData(stockGraph[0])
                 setStockFacts(stockGraph[1])
@@ -62,9 +65,11 @@ function App() {
                 const stockCur = stockGraph[2][1]
                 setGraphStockCurrency(Currencies[stockCur])
                 setPercentageChange(stockGraph[1][1][0])
-                setPortfolioData(portfolioData[0])
-                setPortfolioValue(portfolioData[1])
+                setPortfolioData(fetchedPortfolioData[0])
+                setPortfolioValue(fetchedPortfolioData[1])
                 setChartSymbol(localStorage.getItem("symbol") || "£" )
+                setExample("Portfolio")
+                localStorage.setItem("Portfolio",true)
         };
         }
         useEffect(() => {
@@ -75,13 +80,12 @@ function App() {
     function saveCurrency(name, symbol){
         localStorage.setItem("currency", name)
         localStorage.setItem("symbol", symbol)
+        if (example === "Example"){
+            setChartSymbol(localStorage.getItem("symbol"))
+        }
         currencySet(name)
         setCurrencies(false)
     }
-
-    useEffect(() => {
-        
-    }, [currentPrice])
 
     const findStock = async (e) => {
         e.preventDefault();
@@ -124,15 +128,16 @@ function App() {
         }
         tradeDetails();
         }, [stockIndex])
-
-    const changePeriod = async (time) => {
+    useEffect(() => {
+    if (portfolioData){
+    const changePeriod = async () => {
         const response = await fetch("http://127.0.0.1:5000/timePeriod", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                period: time,
+                period: timePeriod,
                 stock: graphStockName,
             })
         });
@@ -142,6 +147,9 @@ function App() {
             setPercentageChange(data.percentage)
         }
     }
+    changePeriod();
+}
+    },[timePeriod, graphStockName])
 
 
     const resetPortfolio = async () => {
@@ -153,6 +161,13 @@ function App() {
             location.reload()
         }
     }
+    useEffect(() => {
+        if (timePeriod !== "1d"){
+        setGraphTitle("Stock: ")
+        console.log("dkas")
+        }
+    },[timePeriod, graphStockName])
+
     const sendTrade = async (e) => {
         e.preventDefault();
         if (buyValue > 0){
@@ -201,7 +216,6 @@ function App() {
         setFoundStocks([]);
         setDesiredStock(foundStocks[index])
         setStockIndex(index)
-        
     }
 
     return (
@@ -216,20 +230,32 @@ function App() {
         <div id="stock-graph-div">
             <div id="graph-title">
                 <div id="line-title">
-                    <h1 id="best-worst" className="main-font">{bestWorst} performer today:   {graphStockName}</h1>
+                    <div id="best-worst-div" className={!graphTitle ? "" : "active"}>
+                        <h1 className={"best-worst main-font"}>{bestWorst} performer today: {graphStockName}</h1>
+                    </div>
+                    <div id="best-worst-division" className={graphTitle ? "" : "active"}>
+                        <h1 className={graphTitle ? "best-worst main-font" : "active"}>{graphTitle}{graphStockName}</h1>
+                    </div>
                     <h1 className={percentageChange?.includes("-") ? "main-font active" : "main-font"} id="percentage-change">{percentageChange}</h1>
                 </div>
                 <LineGraph symbol = {graphStockCurrency} graphData = {graphData}/>
             </div>
             <div id="periods-division">
-                <PeriodButtons periodChange={changePeriod}/>
+                <PeriodButtons timePeriod = {timePeriod} setTimePeriod = {setTimePeriod} periodChange={(time) => {setTimePeriod(time)}}/>
+                <div className={portfolioData?.length > 1 ? "" : "active"} id="stock-buttons-div">
+                    {Object.keys(portfolioData || {}).map((stock) => {
+                        return(
+                        <button key={stock} className={graphStockName === stock ? "active" : ""} id="stock-button" onClick={() => {setGraphStockName(stock);}}>{stock}</button>
+                        )
+                    })}
+                </div>
             </div>
         </div>
 
         <div className="pie-chart-div">
             <div id="pie-buttons">
                 <button id="new-stock" className={"main-font"} onClick={() => setMenuActive(!menuActive)}>+ New stock</button>
-                <h1 id="portfolio-value" className="main-font">Portfolio Value: {chartSymbol}{portfolioValue}</h1>
+                <h1 id="portfolio-value" className="main-font">{example} Value: {chartSymbol}{portfolioValue}</h1>
                 <button id="reset-port" className={"main-font"} onClick={() => setReset(!reset)}>Reset Portfolio</button>
             </div>
             <div id="confirm-message" className={reset ? "active" : ""}>
@@ -247,7 +273,7 @@ function App() {
                 </div>
             </div>
             <div id="chart-sizing">
-                <PieChart symbol = {chartSymbol} portfolio={portfolioData}/>
+                <PieChart symbol = {chartSymbol} portfolio={portfolioData} setPortfolioValue = {setPortfolioValue}/>
             </div>
         </div>
         <div className={menuActive ? "stock-buy active" : "stock-buy"}>
