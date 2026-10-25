@@ -20,12 +20,12 @@
    ```
 
 2. Run Backend:
-  ```bash
-  python3 main.py
+   ```bash
+   python3 main.py
   ```
 
 3. Run Frontend:
-  ```bash
-  cd frontend
-  npm run dev
-  ```
+   ```bash
+   cd frontend
+   npm run dev
+   ```
