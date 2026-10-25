@@ -18,6 +18,12 @@
 * **Database:** SQLite3
 * **Frontend:** React.js, Chart.js
 
+## Local Installation
+1. Clone Repository:
+  ```bash
+  git clone https://github.com/FirasCosta3/Stock-Portfolio-Tracker
+  ```
+
 1. Install dependencies:
    ```bash
    pip install -r requirements.txt
