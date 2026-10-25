@@ -1,22 +1,28 @@
-﻿# Live Financial Portfolio Tracker
+﻿# Stock Portfolio Tracker
 
-A Python CLI tool for tracking stock investments locally using SQLite and real-time data from Yahoo Finance. I built this to manage buy and sell transactions cleanly without losing historical cost bases or breaking when taking profits.
+## Fully functional Portfolio Tracker with live stock market data to view and track portfolio progress.
 
-## Class breakdown
-* **`Database` (`Database` class):** 
-  * Encapsulates SQLite connection management and automated table initialization (`Portfolio.db`).
-* **`Stock` (`Stock` class):** 
-  * Acts as a dedicated wrapper around the `yfinance` API. It handles stock tickers , metadata retrieval (currency, exchange, display names) for the API, and live price fetching using minute-level slicing (`period="1d"`).
-* **`Portfolio` (`Portfolio` class):** 
-  * Manages portfolio-level business logic. Portfolio manages live user updates, executes cost-averaging algorithms for selling and buying positions, and rendering portfolio outputs.
+- Log all of your trades / buying or selling
+- View short and long term data of individual stocks
+- Change currency depending on your preference
 
 ## What it does
-- **Live Market Data:** Pulls live data for active trading days or the last price on non-trading days `yfinance`.
-- **Ledger System:** Stores everything in a local SQLite database (`Portfolio.db`), logging buys as positive values and sells as negative.
-- **Smart Profit Tracking:** Keeps your original average purchase price intact when you sell at a gain, meaning your ROI and percentage updates stay mathematically accurate.
-- **Safe Inputs:** Built with proper error handling and loop escapes (`[M]`) so you don't get trapped if you make a typo.
-- **Manual Overrides:** Lets you manually punch in your total net deposits and average broker price if you want to skip inputting every individual trade.
+- **User Interface:** Responsive single-page application built with React.js, featuring dynamic state management for real-time market updates.
+- **Data Visualisation:** Interactive real-time line graphs and portfolio pie chart implemented using Chart.js, for real-time trade analysis.
+- **Live Market Data:** Real-time stock market data from the `yfinance` library.
+- **Trading System:** Stores trades in a local SQLite database (`Portfolio.db`), logging buys as positive values and sells as negative, replacing the current stock value if you choose to override old trades.
+- **Smart Profit Tracking:** Keeps your original trades intact when you trade, meaning your ROI and percentage updates stay mathematically accurate.
 
-1. Install the Yahoo Finance dependency:
+1. Install dependencies:
    ```bash
-   pip install yfinance
+   pip install -r requirements.txt
+   npm install
+
+2. Run Backend:
+  ```bash
+  python3 main.py
+
+3. Run Frontend
+  ```bash
+  cd frontend
+  npm run dev
