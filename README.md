@@ -20,22 +20,22 @@
 
 ## Local Installation
 1. Clone Repository:
-  ```bash
-  git clone https://github.com/FirasCosta3/Stock-Portfolio-Tracker
-  ```
+   ```bash
+   git clone https://github.com/FirasCosta3/Stock-Portfolio-Tracker
+   ```
 
-1. Install dependencies:
+2. Install dependencies:
    ```bash
    pip install -r requirements.txt
    npm install
    ```
 
-2. Run Backend:
+3. Run Backend:
    ```bash
    python3 main.py
    ```
 
-3. Run Frontend:
+4. Run Frontend:
    ```bash
    cd frontend
    npm run dev
