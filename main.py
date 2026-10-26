@@ -104,6 +104,7 @@ def reset_portfolio():
 @app.route("/timePeriod", methods = ["POST"])
 def time_period():
     data = request.get_json()
+    print(data, "dashduasdjasuidjasdiajsdsaiodkjais")
     percentage, price_data = get_graph(data, time_period)
     return jsonify({"status": 200, "price_data": price_data, "percentage": percentage})
 

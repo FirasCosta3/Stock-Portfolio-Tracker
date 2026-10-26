@@ -11,6 +11,23 @@ export const LineGraph = ({graphData, symbol}) => {
     const graphTimes = Object.keys(graphData)
     const options = {
         responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+        x: {
+            display: false,
+        },
+        y: {
+            ticks:{
+                callback: function (value) {
+                        const yAxisLabel = Number(value).toLocaleString("en-GB",{
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        });
+                        return `${symbol}${yAxisLabel}`;
+                }
+            }
+            }
+    },
         plugins: {
             legend: {
                 display: false,
@@ -51,5 +68,10 @@ export const LineGraph = ({graphData, symbol}) => {
         ]
     };
 
-    return <Line options={options} data={LineData}/>;
+    return (
+    <div id="line-chart-sizing">
+        <Line options={options} data={LineData}/>
+    </div>
+
+    );
 }

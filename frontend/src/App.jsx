@@ -34,8 +34,8 @@ function App() {
         const [bestWorst, setBestWorst] = useState("");
         const [percentageChange, setPercentageChange] = useState("");
         const [graphStockCurrency, setGraphStockCurrency] = useState("");
-        const [differentStock, setDifferentStock] = useState("");
         const [reset, setReset] = useState(false)
+        const [newGraphStockName, setNewGraphStockName] = useState("");
         const [currency, currencySet] = useState(() => {
             const saved = localStorage.getItem("currency")
             return saved ? saved : "GBP";
@@ -69,13 +69,13 @@ function App() {
                 setPortfolioValue(fetchedPortfolioData[1])
                 setChartSymbol(localStorage.getItem("symbol") || "£" )
                 setExample("Portfolio")
-                localStorage.setItem("Portfolio",true)
+                localStorage.setItem("Portfolio",true) 
         };
         }
         useEffect(() => {
             localStorage.setItem("currency", currency)
             sendPortfolioData(currency);
-            
+            console.log(newGraphStockName) 
         }, [currency])
     function saveCurrency(name, symbol){
         localStorage.setItem("currency", name)
@@ -131,6 +131,7 @@ function App() {
     useEffect(() => {
     if (portfolioData){
     const changePeriod = async () => {
+        const graphName = newGraphStockName || graphStockName;
         const response = await fetch("http://127.0.0.1:5000/timePeriod", {
             method: "POST",
             headers: {
@@ -138,7 +139,7 @@ function App() {
             },
             body: JSON.stringify({
                 period: timePeriod,
-                stock: graphStockName,
+                stock: graphName,
             })
         });
         const data = await response.json()
@@ -149,7 +150,7 @@ function App() {
     }
     changePeriod();
 }
-    },[timePeriod, graphStockName])
+    },[timePeriod, newGraphStockName])
 
 
     const resetPortfolio = async () => {
@@ -162,11 +163,10 @@ function App() {
         }
     }
     useEffect(() => {
-        if (timePeriod !== "1d"){
-        setGraphTitle("Stock: ")
-        console.log("dkas")
+        if (graphStockName != newGraphStockName && newGraphStockName != ""){
+        setGraphTitle("Active stock choice: ")
         }
-    },[timePeriod, graphStockName])
+    },[timePeriod, newGraphStockName])
 
     const sendTrade = async (e) => {
         e.preventDefault();
@@ -234,18 +234,18 @@ function App() {
                         <h1 className={"best-worst main-font"}>{bestWorst} performer today: {graphStockName}</h1>
                     </div>
                     <div id="best-worst-division" className={graphTitle ? "" : "active"}>
-                        <h1 className={graphTitle ? "best-worst main-font" : "active"}>{graphTitle}{graphStockName}</h1>
+                        <h1 className={graphTitle ? "best-worst main-font" : "active"}>{graphTitle}{newGraphStockName}</h1>
                     </div>
                     <h1 className={percentageChange?.includes("-") ? "main-font active" : "main-font"} id="percentage-change">{percentageChange}</h1>
                 </div>
-                <LineGraph symbol = {graphStockCurrency} graphData = {graphData}/>
+                    <LineGraph symbol = {graphStockCurrency} graphData = {graphData}/>
             </div>
             <div id="periods-division">
                 <PeriodButtons timePeriod = {timePeriod} setTimePeriod = {setTimePeriod} periodChange={(time) => {setTimePeriod(time)}}/>
                 <div className={portfolioData?.length > 1 ? "" : "active"} id="stock-buttons-div">
                     {Object.keys(portfolioData || {}).map((stock) => {
                         return(
-                        <button key={stock} className={graphStockName === stock ? "active" : ""} id="stock-button" onClick={() => {setGraphStockName(stock);}}>{stock}</button>
+                        <button key={stock} className={graphStockName === stock ? "active" : ""} id="stock-button" onClick={() => {setNewGraphStockName(stock);}}>{stock}</button>
                         )
                     })}
                 </div>
