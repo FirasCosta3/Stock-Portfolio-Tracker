@@ -5,10 +5,10 @@ import {Currency_buttons} from "./components/currencies.jsx";
 import {Currencies} from "./constants/currencies.js";
 import {LineGraph} from "./components/line.jsx";
 import {PeriodButtons} from "./components/periods.jsx";
-import {periods} from "./constants/periods.js"
 
 function App() {
         const [portfolioData, setPortfolioData] = useState(null);
+        const visitedDivs = []
         const [showCurrencies, setCurrencies] = useState(false);
         const [menuActive, setMenuActive] = useState(false);
         const [tradeValue, setTradeValue] = useState("");
@@ -33,6 +33,7 @@ function App() {
         const [tradeError, setTradeError] = useState("");
         const [bestWorst, setBestWorst] = useState("");
         const [percentageChange, setPercentageChange] = useState("");
+        const [previousChange, setPreviousChange] = useState("");
         const [graphStockCurrency, setGraphStockCurrency] = useState("");
         const [reset, setReset] = useState(false)
         const [newGraphStockName, setNewGraphStockName] = useState("");
@@ -53,7 +54,6 @@ function App() {
             const clickOutsideSearch = (event) => {
                 if (stockBuyRef.current && !stockBuyRef.current.contains(event.target)){
                     setMenuActive(menuActive)
-                    console.log(menuActive)
                 }
             };
             document.addEventListener("mousedown", clickOutsideSearch);
@@ -244,6 +244,9 @@ function App() {
         setDesiredStock(foundStocks[index])
         setStockIndex(index)
     }
+    const justGoBack = () => {
+        console.log(visitedDivs)
+    }
 
     return (
         <>
@@ -281,7 +284,7 @@ function App() {
 
         <div className="pie-chart-div">
             <div id="pie-buttons">
-                <button id="new-stock" className={"main-font"} onClick={() => setMenuActive(!menuActive)}>+ New stock</button>
+                <button id="new-stock" className={"main-font"} onClick={() => {setMenuActive((menuActive) => !menuActive); visitedDivs.current.push(() => console.log("shshshhshshss"));}}>+ New stock</button>
                 <h1 id="portfolio-value" className="main-font">{example} Value: {chartSymbol}{portfolioValue}</h1>
                 <button id="reset-port" className={"main-font"} onClick={() => setReset(!reset)}>Reset Portfolio</button>
             </div>
@@ -305,7 +308,7 @@ function App() {
         </div>
         <div ref={stockBuyRef} className={menuActive ? "stock-buy active" : "stock-buy"}>
             <div id = "search-buttons">
-                <button id="go-back">
+                <button id="go-back" onClick={justGoBack}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                 </button>
                 <button id="cancel-button" onClick={() => setMenuActive(!menuActive)}>
