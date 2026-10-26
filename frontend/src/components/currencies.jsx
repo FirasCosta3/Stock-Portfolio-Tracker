@@ -1,7 +1,9 @@
 import {Currencies} from '../constants/currencies.js';
 import '../App.css'
+import {useRef} from "react"
 
 const currency = Object.entries(Currencies)
+
 export const Currency_buttons = ({curClass, currentPick}) => {
     return (
         <div className={curClass}>

@@ -1,5 +1,5 @@
 import {PieChart} from "./components/Pie.jsx";
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 import "./App.css";
 import {Currency_buttons} from "./components/currencies.jsx";
 import {Currencies} from "./constants/currencies.js";
@@ -36,6 +36,31 @@ function App() {
         const [graphStockCurrency, setGraphStockCurrency] = useState("");
         const [reset, setReset] = useState(false)
         const [newGraphStockName, setNewGraphStockName] = useState("");
+        const dropDownRef = useRef(null)
+        const stockBuyRef = useRef(null)
+        useEffect(() => {
+            const clickOutsideCur = (event) => {
+                if (dropDownRef.current && !dropDownRef.current.contains(event.target)){
+                    setCurrencies(showCurrencies)
+                }
+            };
+            document.addEventListener("mousedown", clickOutsideCur);
+            return () => {
+                document.removeEventListener("mousedown", clickOutsideCur)
+            };
+        }, []);
+        useEffect(() => {
+            const clickOutsideSearch = (event) => {
+                if (stockBuyRef.current && !stockBuyRef.current.contains(event.target)){
+                    setMenuActive(menuActive)
+                    console.log(menuActive)
+                }
+            };
+            document.addEventListener("mousedown", clickOutsideSearch);
+        return () => {
+            document.removeEventListener("mousdown", clickOutsideSearch);
+        }}, [])
+
         const [currency, currencySet] = useState(() => {
             const saved = localStorage.getItem("currency")
             return saved ? saved : "GBP";
@@ -51,20 +76,23 @@ function App() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    currency: selectedCurrency
+                    currency: selectedCurrency,
+                    stock: newGraphStockName
                 })
             });                
             const data = await response.json();
             if (data.status === 200) {
                 const fetchedPortfolioData = data.data
                 const stockGraph = data.stock_graph
-                setGraphData(stockGraph[0])
-                setStockFacts(stockGraph[1])
-                setBestWorst(stockGraph[1][0])
-                setGraphStockName(stockGraph[2][0])
-                const stockCur = stockGraph[2][1]
-                setGraphStockCurrency(Currencies[stockCur])
-                setPercentageChange(stockGraph[1][1][0])
+                if (stockGraph){
+                    setGraphData(stockGraph[0])
+                    setStockFacts(stockGraph[1])
+                    setBestWorst(stockGraph[1][0])
+                    setGraphStockName(stockGraph[2][0])
+                    const stockCur = stockGraph[2][1]
+                    setGraphStockCurrency(Currencies[stockCur])
+                    setPercentageChange(stockGraph[1][1][0])
+                }
                 setPortfolioData(fetchedPortfolioData[0])
                 setPortfolioValue(fetchedPortfolioData[1])
                 setChartSymbol(localStorage.getItem("symbol") || "£" )
@@ -75,7 +103,6 @@ function App() {
         useEffect(() => {
             localStorage.setItem("currency", currency)
             sendPortfolioData(currency);
-            console.log(newGraphStockName) 
         }, [currency])
     function saveCurrency(name, symbol){
         localStorage.setItem("currency", name)
@@ -221,9 +248,9 @@ function App() {
     return (
         <>
     <nav id="top-nav">
-        <div id="cur-div">
+        <div id="cur-div" ref ={dropDownRef}>
             <button className="main-font currency-button" id="current-currency" onClick={() => setCurrencies(!showCurrencies)}>{currency_cur} {currency_symb}</button>
-            <Currency_buttons curClass={showCurrencies ? "currencies active" : "currencies"} currentPick={saveCurrency}/>
+            <Currency_buttons dropDownRef={dropDownRef} curClass={showCurrencies ? "currencies active" : "currencies"} currentPick={saveCurrency}/>
         </div>
     </nav>
     <div id="page-divider">
@@ -259,7 +286,7 @@ function App() {
                 <button id="reset-port" className={"main-font"} onClick={() => setReset(!reset)}>Reset Portfolio</button>
             </div>
             <div id="confirm-message" className={reset ? "active" : ""}>
-                <button className="cancel-button" onClick={() => setReset(!reset)}>
+                <button id="cancel-button-confirm" onClick={() => setReset(!reset)}>
                     <svg id="x-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="50" height="50">
                         <path d="M8.5 8.5 L15.5 15.5 M15.5 8.5 L8.5 15.5" stroke="green" strokeWidth="2" strokeLinecap="round" fill="none"/>
                     </svg>
@@ -276,12 +303,17 @@ function App() {
                 <PieChart symbol = {chartSymbol} portfolio={portfolioData} setPortfolioValue = {setPortfolioValue}/>
             </div>
         </div>
-        <div className={menuActive ? "stock-buy active" : "stock-buy"}>
-            <button className="cancel-button" onClick={() => setMenuActive(!menuActive)}>
+        <div ref={stockBuyRef} className={menuActive ? "stock-buy active" : "stock-buy"}>
+            <div id = "search-buttons">
+                <button id="go-back">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                </button>
+                <button id="cancel-button" onClick={() => setMenuActive(!menuActive)}>
                 <svg id="x-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="50" height="50">
                     <path d="M8.5 8.5 L15.5 15.5 M15.5 8.5 L8.5 15.5" stroke="green" strokeWidth="2" strokeLinecap="round" fill="none"/>
                 </svg>
             </button>
+            </div> 
             <div id="search-div">
                 <form id="stock-search-form" onSubmit={(e) => {findStock(e); setDesiredStock("")}}>
                     <input  autoComplete="off" onChange={(e) => setStockSearch(e.target.value)} id="stock-search" placeholder="Enter a stock or ticker" type="text"></input>

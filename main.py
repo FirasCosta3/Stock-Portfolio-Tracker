@@ -21,30 +21,40 @@ def portfolio():
     start = time.perf_counter()
     data = request.get_json()
     global currency
-    currency = data.get("currency", "GBP")
+    currency, stock_tickers = data.values()
     db = Database()
     my_portfolio = Portfolio(db)
     grouped_stocks = my_portfolio.get_grouped_stocks()
     if not grouped_stocks:
         return jsonify({"status": 404, "data": []})
-    stock_tickers = my_portfolio.stock_tickers() 
-    percentages = percentage_changes(stock_tickers) # finding highest or lowest stock of the day
-    statistics = high_or_low(percentages)
-    graph_list = stock_graph(statistics, stock_tickers)
-    ticker = graph_list[2]
-    price_data = graph_data(ticker, "1d")
-    graph_list.insert(0, price_data)
-    graph_list.pop()
+    if stock_tickers == "":
+        stock_tickers = my_portfolio.stock_tickers() 
+        percentages = percentage_changes(stock_tickers) # finding highest or lowest stock of the day
+        statistics = high_or_low(percentages)
+        graph_list = stock_graph(statistics, stock_tickers)
+        ticker = graph_list[2]
+        price_data = graph_data(ticker, "1d")
+        graph_list.insert(0, price_data)
+        graph_list.pop()
+    else:
+        search = yf.Search(stock_tickers, max_results = 1)
+        tkr = search.quotes[0]["symbol"]
+        ticker = yf.Ticker(tkr)
+        graph_list = ""
     average_price = my_portfolio.price_average(grouped_stocks)
     db_data = my_portfolio.display_portfolio(average_price, currency, currency_symbols)
     end = time.perf_counter()
     print("fetching portfolio took ",(end-start),"s")
+    print(graph_list)
     return jsonify({"data": db_data, "status": 200, "stock_graph": graph_list})
 
 @app.route("/stocks", methods = ["POST"]) # retreive stock searches that is chosen through the search
 def stocks():
     data = request.get_json()
     stock_choice = data.get("search")
+    print(stock_choice)
+    if not stock_choice:
+        return jsonify({"status": 404})
     stock_searches = search_stock(stock_choice)
     global stock_search
     stock_search = stock_searches[1]
@@ -73,7 +83,6 @@ def trade():
         purchases = response.get("purchases")
         symbol = stock_info[3]
         if trade_type == "sell": # if the user chose sell
-            print(purchases)
             negative_sales = [(-amount, price) for amount, price in purchases]
             db.db_assign(symbol, negative_sales)
             my_portfolio = Portfolio(db)
@@ -104,7 +113,6 @@ def reset_portfolio():
 @app.route("/timePeriod", methods = ["POST"])
 def time_period():
     data = request.get_json()
-    print(data, "dashduasdjasuidjasdiajsdsaiodkjais")
     percentage, price_data = get_graph(data, time_period)
     return jsonify({"status": 200, "price_data": price_data, "percentage": percentage})
 
