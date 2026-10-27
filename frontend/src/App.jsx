@@ -8,7 +8,6 @@ import {PeriodButtons} from "./components/periods.jsx";
 
 function App() {
         const [portfolioData, setPortfolioData] = useState(null);
-        const visitedDivs = []
         const [showCurrencies, setCurrencies] = useState(false);
         const [menuActive, setMenuActive] = useState(false);
         const [tradeValue, setTradeValue] = useState("");
@@ -33,10 +32,10 @@ function App() {
         const [tradeError, setTradeError] = useState("");
         const [bestWorst, setBestWorst] = useState("");
         const [percentageChange, setPercentageChange] = useState("");
-        const [previousChange, setPreviousChange] = useState("");
         const [graphStockCurrency, setGraphStockCurrency] = useState("");
         const [reset, setReset] = useState(false)
         const [newGraphStockName, setNewGraphStockName] = useState("");
+        const visitedDivs = useRef([])
         const dropDownRef = useRef(null)
         const stockBuyRef = useRef(null)
         useEffect(() => {
@@ -114,15 +113,16 @@ function App() {
         setCurrencies(false)
     }
 
-    const findStock = async (e) => {
+    const findStock = async (e, message) => {
         e.preventDefault();
+        setStockSearch(message);
         const response = await fetch("http://127.0.0.1:5000/stocks", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                search: stockSearch
+                search: message
             })
         });
         const data = await response.json();
@@ -237,15 +237,28 @@ function App() {
         setErrorMessage(true)
     }
 
+    const closeAll = () => {
+        visitedDivs.current.toReversed().forEach((active) => active?.())
+        visitedDivs.current = [];
+        resetTradeFields();
+    }
     const currency_cur = localStorage.getItem("currency") || "GBP"
     const currency_symb = localStorage.getItem("symbol") || "£"
     const changeSearches = (index) => { 
         setFoundStocks([]);
         setDesiredStock(foundStocks[index])
+        visitedDivs.current.push(() => setDesiredStock(""))
         setStockIndex(index)
-    }
+    }   
     const justGoBack = () => {
         console.log(visitedDivs)
+        const lastDiv = visitedDivs.current.pop();
+        lastDiv((active) => active?.());
+        resetTradeFields();
+    }
+    const resetTradeFields = () =>{
+        setBuyValue("");
+        setTradeValue("")
     }
 
     return (
@@ -284,7 +297,7 @@ function App() {
 
         <div className="pie-chart-div">
             <div id="pie-buttons">
-                <button id="new-stock" className={"main-font"} onClick={() => {setMenuActive((menuActive) => !menuActive); visitedDivs.current.push(() => console.log("shshshhshshss"));}}>+ New stock</button>
+                <button id="new-stock" className={"main-font"} onClick={() => {setMenuActive((menuActive) => !menuActive); visitedDivs.current.push(() => setMenuActive((menuActive) => !menuActive));}}>+ New stock</button>
                 <h1 id="portfolio-value" className="main-font">{example} Value: {chartSymbol}{portfolioValue}</h1>
                 <button id="reset-port" className={"main-font"} onClick={() => setReset(!reset)}>Reset Portfolio</button>
             </div>
@@ -308,18 +321,18 @@ function App() {
         </div>
         <div ref={stockBuyRef} className={menuActive ? "stock-buy active" : "stock-buy"}>
             <div id = "search-buttons">
-                <button id="go-back" onClick={justGoBack}>
+                <button id="go-back" onClick={() => justGoBack(menuActive)}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                 </button>
-                <button id="cancel-button" onClick={() => setMenuActive(!menuActive)}>
+                <button id="cancel-button" onClick={closeAll}>
                 <svg id="x-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="50" height="50">
                     <path d="M8.5 8.5 L15.5 15.5 M15.5 8.5 L8.5 15.5" stroke="green" strokeWidth="2" strokeLinecap="round" fill="none"/>
                 </svg>
             </button>
             </div> 
             <div id="search-div">
-                <form id="stock-search-form" onSubmit={(e) => {findStock(e); setDesiredStock("")}}>
-                    <input  autoComplete="off" onChange={(e) => setStockSearch(e.target.value)} id="stock-search" placeholder="Enter a stock or ticker" type="text"></input>
+                <form id="stock-search-form" onSubmit={(e) => {findStock(e, stockSearch); setDesiredStock(""); visitedDivs.current.push(() => findStock(e, ""))}}>
+                    <input  autoComplete="off" value={stockSearch} onChange={(e) => setStockSearch(e.target.value)} id="stock-search" placeholder="Enter a stock or ticker" type="text"></input>
                 </form>
                     {foundStocks?.map((stock, index) => {
                         return (
@@ -341,14 +354,14 @@ function App() {
                                 <label htmlFor="trade-choice" className="main-font" id="trade-label">Value</label>
                                 <form onSubmit={(e) => sendTrade(e)} className="main-font trade-value">
                                     <span className="pound">{chartSymbol}</span>
-                                    <input onChange={(e) => setTradeValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-choice" placeholder="0"></input>
+                                    <input value={tradeValue} onChange={(e) => setTradeValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-choice" placeholder="0"></input>
                                 </form>
                             </div>  
                             <div id="price-div">
                                 <label htmlFor="trade-p" className="main-font" id="trade-price">Price Average</label>
                                 <form onSubmit={(e) => sendTrade(e)} className="main-font trade-value">
                                     <span className="pound">{stockCurrency}</span>
-                                    <input onChange={(e) => setBuyValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-p" placeholder="0"></input>
+                                    <input value={buyValue} onChange={(e) => setBuyValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-p" placeholder="0"></input>
                                 </form>
                             </div>
                             <div id="error-div">

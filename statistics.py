@@ -20,6 +20,7 @@ def percentage_changes(stocks):
         open_price = current_data.Open.iloc[-1]
         close_price = current_data.Close.iloc[-1]
         percentage_change = ((close_price - open_price)/open_price)* 100
+        print(close_price, open_price, percentage_change)
         highest[i] = round(float(percentage_change),2)
     return highest
 
@@ -44,13 +45,11 @@ def high_or_low(percentages):
     stock = list(percentages.keys())[ind]
     sign = "" if word[1][0] < 0 else "+"
     word[1][0] = f"{sign}{word[1][0]}%"
-    print(word)
     return [word, stock]
 
 def stock_graph(statistics, stock_tickers):
     stock_of_day = statistics[1]
     ticker = yf.Ticker(stock_of_day)
-    print(stock_of_day)
     stock_currency = ticker.info.get("currency", "£")
     stock_name = ticker.info.get("shortname")
     if not stock_name:

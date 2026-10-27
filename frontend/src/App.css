@@ -652,3 +652,14 @@ body{
     cursor: pointer;
     margin: 10px 0 0 10px;
 }
+
+#searches-div{
+    visibility: hidden;
+    opacity: 0;
+    display: none;
+}
+
+#searches-div.active{
+    visibility: visible;
+    opacity: 1;
+}
