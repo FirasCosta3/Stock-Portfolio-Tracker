@@ -41,14 +41,16 @@ def high_or_low(percentages):
             lowest.append(i)
     word = [positive, highest] if positive == "Best" else [positive, lowest]
     ind = list(percentages.values()).index(word[1][0])
+    stock = list(percentages.keys())[ind]
     sign = "" if word[1][0] < 0 else "+"
     word[1][0] = f"{sign}{word[1][0]}%"
-    return [word, ind]
+    print(word)
+    return [word, stock]
 
 def stock_graph(statistics, stock_tickers):
-    ind = statistics[1]
-    stock_of_day = stock_tickers[ind][0]
+    stock_of_day = statistics[1]
     ticker = yf.Ticker(stock_of_day)
+    print(stock_of_day)
     stock_currency = ticker.info.get("currency", "£")
     stock_name = ticker.info.get("shortname")
     if not stock_name:

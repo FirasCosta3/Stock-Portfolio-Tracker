@@ -45,14 +45,12 @@ def portfolio():
     db_data = my_portfolio.display_portfolio(average_price, currency, currency_symbols)
     end = time.perf_counter()
     print("fetching portfolio took ",(end-start),"s")
-    print(graph_list)
     return jsonify({"data": db_data, "status": 200, "stock_graph": graph_list})
 
 @app.route("/stocks", methods = ["POST"]) # retreive stock searches that is chosen through the search
 def stocks():
     data = request.get_json()
     stock_choice = data.get("search")
-    print(stock_choice)
     if not stock_choice:
         return jsonify({"status": 404})
     stock_searches = search_stock(stock_choice)
