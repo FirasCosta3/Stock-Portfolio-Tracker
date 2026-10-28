@@ -6,7 +6,7 @@ import {useEffect, useState} from "react"
 ChartJS.register(Tooltip,Legend, ArcElement)
 export const ExamplePie = ({symbol, setPortfolioValue}) => {
     const [portDone, setPortDone] = useState(false)
-    const labels = ["Example 1", "Example 2", "Example 3", "Example 4"]
+    const labels = ["Example 1", "Example 2", "Example 3"]
     const options = {
         responsive: true,
         animation: {
@@ -35,7 +35,7 @@ export const ExamplePie = ({symbol, setPortfolioValue}) => {
         }
     };
     const dynamicColors = labels.map(() => randomColor())
-    const numberStocks = labels.map(() => Math.floor(Math.random()*10)*2635.34)
+    const numberStocks = labels.map(() => Math.floor((Math.random()+1)*10)*2635.34)
     useEffect(() => {
     const total = numberStocks.reduce((value, total) =>{
         return value+total

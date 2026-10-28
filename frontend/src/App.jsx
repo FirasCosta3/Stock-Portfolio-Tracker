@@ -17,7 +17,7 @@ function App() {
         const [currentPrice, setCurrentPrice] = useState("");
         const [stockSearch, setStockSearch] = useState("");
         const [errorMessage, setErrorMessage] = useState(false);
-        const [foundStocks, setFoundStocks] = useState([]);
+        const [foundStocks, setFoundStocks] = useState(null);
         const [tradeType, setTradeType] = useState("");
         const [graphTitle, setGraphTitle] = useState("");
         const [stockIndex, setStockIndex] = useState("");
@@ -35,9 +35,22 @@ function App() {
         const [graphStockCurrency, setGraphStockCurrency] = useState("");
         const [reset, setReset] = useState(false)
         const [newGraphStockName, setNewGraphStockName] = useState("");
+        const [newStocks, setNewStocks] = useState("");
         const visitedDivs = useRef([])
         const dropDownRef = useRef(null)
         const stockBuyRef = useRef(null)
+        const checkPush = (pusher) => {
+            const pusherString = pusher.toString()
+            console.log(newStocks)
+            console.log(pusherString)
+            const isInList = visitedDivs.current.some(
+                (pushee) => pushee.toString() === pusherString
+            );
+            if (!isInList){
+                visitedDivs.current.push(pusher)
+            }
+        };
+
         useEffect(() => {
             const clickOutsideCur = (event) => {
                 if (dropDownRef.current && !dropDownRef.current.contains(event.target)){
@@ -53,6 +66,7 @@ function App() {
             const clickOutsideSearch = (event) => {
                 if (stockBuyRef.current && !stockBuyRef.current.contains(event.target)){
                     setMenuActive(menuActive)
+                    closeAll();
                 }
             };
             document.addEventListener("mousedown", clickOutsideSearch);
@@ -128,6 +142,7 @@ function App() {
         const data = await response.json();
         if (data.status === 200){
             setFoundStocks(data.data)
+            setNewStocks(data.data)
         }   
         else {
             setFoundStocks([])
@@ -245,9 +260,8 @@ function App() {
     const currency_cur = localStorage.getItem("currency") || "GBP"
     const currency_symb = localStorage.getItem("symbol") || "£"
     const changeSearches = (index) => { 
-        setFoundStocks([]);
+        setFoundStocks(null);
         setDesiredStock(foundStocks[index])
-        visitedDivs.current.push(() => setDesiredStock(""))
         setStockIndex(index)
     }   
     const justGoBack = () => {
@@ -258,7 +272,8 @@ function App() {
     }
     const resetTradeFields = () =>{
         setBuyValue("");
-        setTradeValue("")
+        setTradeValue("");
+        setTradeType("");
     }
 
     return (
@@ -297,7 +312,7 @@ function App() {
 
         <div className="pie-chart-div">
             <div id="pie-buttons">
-                <button id="new-stock" className={"main-font"} onClick={() => {setMenuActive((menuActive) => !menuActive); visitedDivs.current.push(() => setMenuActive((menuActive) => !menuActive));}}>+ New stock</button>
+                <button id="new-stock" className={"main-font"} onClick={() => {setMenuActive((menuActive) => !menuActive); checkPush(() => setMenuActive((menuActive) => !menuActive));}}>+ New stock</button>
                 <h1 id="portfolio-value" className="main-font">{example} Value: {chartSymbol}{portfolioValue}</h1>
                 <button id="reset-port" className={"main-font"} onClick={() => setReset(!reset)}>Reset Portfolio</button>
             </div>
@@ -331,13 +346,13 @@ function App() {
             </button>
             </div> 
             <div id="search-div">
-                <form id="stock-search-form" onSubmit={(e) => {findStock(e, stockSearch); setDesiredStock(""); visitedDivs.current.push(() => findStock(e, ""))}}>
+                <form id="stock-search-form" onSubmit={(e) => {findStock(e, stockSearch); setDesiredStock(""); checkPush(() => findStock(e, ""))}}>
                     <input  autoComplete="off" value={stockSearch} onChange={(e) => setStockSearch(e.target.value)} id="stock-search" placeholder="Enter a stock or ticker" type="text"></input>
                 </form>
                     {foundStocks?.map((stock, index) => {
                         return (
                             <div key={index} className="search-button-div">
-                                <button type="button" className="search-buttons" onClick={() => changeSearches(index)}>{stock}</button>
+                                <button type="button" className="search-buttons" onClick={() => {checkPush(() => {setDesiredStock(""); setFoundStocks(newStocks)}); changeSearches(index)}}>{stock}</button>
                             </div>
                         );
                     })}
