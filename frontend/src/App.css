@@ -665,3 +665,22 @@ body{
     visibility: visible;
     opacity: 1;
 }
+
+#percentage-change.active{
+    color: red;
+}
+
+#port-details-div{
+    display: flex;
+    flex-direction: column;
+}
+
+#port-div{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#new-deposit{
+    font-size: 26px;
+}

@@ -1,6 +1,5 @@
 import yfinance as yf
 import logging
-import time
 from database import Database
 from stock import currency_symbols
 from portfolio import Portfolio
@@ -25,6 +24,7 @@ def portfolio():
     db = Database()
     my_portfolio = Portfolio(db)
     grouped_stocks = my_portfolio.get_grouped_stocks()
+    trading_value, total_sum = my_portfolio.portfolio_value(currency)
     if not grouped_stocks:
         return jsonify({"status": 404, "data": []})
     if stock_tickers == "":
@@ -43,7 +43,11 @@ def portfolio():
         graph_list = ""
     average_price = my_portfolio.price_average(grouped_stocks)
     db_data = my_portfolio.display_portfolio(average_price, currency, currency_symbols)
-    return jsonify({"data": db_data, "status": 200, "stock_graph": graph_list})
+    total_data = db_data[2]
+    percent = ((total_data - total_sum) / total_sum)*100
+    symbol = "" if percent < 0 else "+"
+    percentage_change = f"{symbol}{(((total_data - total_sum) / total_sum)*100):.1f}%"
+    return jsonify({"data": db_data, "status": 200, "stock_graph": graph_list, "trading_value": trading_value, "percentage": percentage_change})
 
 @app.route("/stocks", methods = ["POST"]) # retreive stock searches that is chosen through the search
 def stocks():

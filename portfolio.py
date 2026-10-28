@@ -1,5 +1,6 @@
 from stock import Stock
 import requests
+import yfinance as yf
 
 class Portfolio:
     def __init__(self, db_obj):
@@ -78,4 +79,27 @@ class Portfolio:
                     except:
                         continue
                 stock_dict[display_name] = [percentage_change, cur_symbol, float(amount_invested)]
-        return [stock_dict, f"{sum(total_invested):,.2f}"]
+        return [stock_dict, f"{sum(total_invested):,.2f}", sum(total_invested)]
+
+    def portfolio_value(self, user_currency):
+        result = self.db_obj.cursor.execute("SELECT symbol, amount_invested FROM portfolio")
+        data = result.fetchall()
+        total_amount = []
+        for trades in data: 
+            ticker_name = trades[0]
+            amount_invested = trades[1]
+            ticker = yf.Ticker(ticker_name)
+            currency = ticker.info.get("currency")
+            if currency == user_currency:
+                total_amount.append(round(float(amount_invested),2))
+            else:
+                try:
+                    url = f"https://api.frankfurter.dev/v1/latest?base={currency}&symbols={user_currency}"
+                    response = requests.get(url)
+                    data = response.json()
+                    rate = data["rates"][user_currency]
+                    amount_invested = round((amount_invested * rate),2 )
+                    total_amount.append(float(amount_invested))
+                except:
+                    continue
+        return f"{sum(total_amount):,.2f}", sum(total_amount)

@@ -13,6 +13,7 @@ function App() {
         const [tradeValue, setTradeValue] = useState("");
         const [timePeriod, setTimePeriod] = useState("1d");
         const [buyValue, setBuyValue] = useState("");
+        const [amountInvested, setAmountInvested] = useState(1837.33);
         const [example, setExample] = useState("Example");
         const [currentPrice, setCurrentPrice] = useState("");
         const [stockSearch, setStockSearch] = useState("");
@@ -24,11 +25,10 @@ function App() {
         const [desiredStock, setDesiredStock] = useState("");
         const [stockInfo, setStockInfo] = useState("");
         const [portfolioValue, setPortfolioValue] = useState("");
-        const [stockPurchase, setStockPurchase] = useState("");
         const [stockCurrency, setStockCurrency] = useState("");
+        const [totalPercentage, setTotalPercentage] = useState("");
         const [graphData, setGraphData] = useState("");
         const [graphStockName, setGraphStockName] = useState("");
-        const [stockFacts, setStockFacts] = useState("");
         const [tradeError, setTradeError] = useState("");
         const [bestWorst, setBestWorst] = useState("");
         const [percentageChange, setPercentageChange] = useState("");
@@ -36,6 +36,7 @@ function App() {
         const [reset, setReset] = useState(false)
         const [newGraphStockName, setNewGraphStockName] = useState("");
         const [newStocks, setNewStocks] = useState("");
+        const [netDeposit, setNetDeposit] = useState("Net Deposit ");
         const visitedDivs = useRef([])
         const dropDownRef = useRef(null)
         const stockBuyRef = useRef(null)
@@ -94,10 +95,11 @@ function App() {
             const data = await response.json();
             if (data.status === 200) {
                 const fetchedPortfolioData = data.data
+                setAmountInvested(data.trading_value)
+                setTotalPercentage(data.percentage)
                 const stockGraph = data.stock_graph
                 if (stockGraph){
                     setGraphData(stockGraph[0])
-                    setStockFacts(stockGraph[1])
                     setBestWorst(stockGraph[1][0]+" performer today: ")
                     setGraphStockName(stockGraph[2][0])
                     const stockCur = stockGraph[2][1]
@@ -109,6 +111,7 @@ function App() {
                 setChartSymbol(localStorage.getItem("symbol") || "£" )
                 setExample("Portfolio")
                 localStorage.setItem("Portfolio",true) 
+                setNetDeposit("Net Deposit ")
         };
         }
         useEffect(() => {
@@ -235,7 +238,6 @@ function App() {
                 }
             }
             else if (data.status === 200){
-                setStockPurchase(data.purchases)
                 location.reload()
             }
             
@@ -310,7 +312,13 @@ function App() {
         <div className="pie-chart-div">
             <div id="pie-buttons">
                 <button id="new-stock" className={"main-font"} onClick={() => {setMenuActive((menuActive) => !menuActive); checkPush(() => setMenuActive((menuActive) => !menuActive));}}>+ New stock</button>
-                <h1 id="portfolio-value" className="main-font">{example} Value: {chartSymbol}{portfolioValue}</h1>
+                <div id ="port-details-div">                
+                    <h1 id="portfolio-value" className="main-font">{example} Value: {chartSymbol}{portfolioValue}</h1>
+                    <div id="port-div">
+                        <h1 id="new-deposit" className={"main-font"}>{netDeposit}{chartSymbol}{amountInvested}</h1>
+                        <h1 id="percentage-change" className={totalPercentage.includes("-") ? "main-font active": "main-font"}>{totalPercentage}</h1>
+                    </div>
+                </div>
                 <button id="reset-port" className={"main-font"} onClick={() => setReset(!reset)}>Reset Portfolio</button>
             </div>
             <div id="confirm-message" className={reset ? "active" : ""}>
