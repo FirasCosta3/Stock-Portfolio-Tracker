@@ -15,6 +15,11 @@ export const LineGraph = ({graphData, symbol}) => {
         scales: {
         x: {
             display: false,
+            ticks: {
+                autoSkip: false,
+                maxRotation: 45,
+                minRotation: 45,
+            }
         },
         y: {
             ticks:{

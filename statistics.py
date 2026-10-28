@@ -14,14 +14,13 @@ def percentage_changes(stocks):
         if i[0] not in tickers:
             tickers.append(i[0])
     highest = {}
-    for index, i in enumerate(tickers):
-        ticker = yf.Ticker(i)
-        current_data = ticker.history(period="1d")
-        open_price = current_data.Open.iloc[-1]
-        close_price = current_data.Close.iloc[-1]
+    for index, stock in enumerate(tickers):
+        ticker = yf.Ticker(stock)
+        graph_prices = list(graph_data(ticker, "1d").values())
+        open_price = float(graph_prices[0])
+        close_price = float(graph_prices[-1])
         percentage_change = ((close_price - open_price)/open_price)* 100
-        print(close_price, open_price, percentage_change)
-        highest[i] = round(float(percentage_change),2)
+        highest[stock] = round(float(percentage_change),2)
     return highest
 
 def high_or_low(percentages):
@@ -60,10 +59,10 @@ def stock_percent(stock, time_period): # stock name to ticker symbol
     search = yf.Search(stock, max_results = 1)
     tkr = search.quotes[0]["symbol"]
     ticker = yf.Ticker(tkr)
-    period_history = ticker.history(period = time_period)
-    close_price = period_history.Close.iloc[-1]
-    open_price = period_history.Open.iloc[0]
-    percentage = ((close_price - open_price)/open_price)*100
+    graph_prices = list(graph_data(ticker, time_period).values())
+    open_price = float(graph_prices[0])
+    close_price = float(graph_prices[-1])
+    percentage = ((close_price - open_price)/open_price)* 100
     symbol = "" if percentage < 0 else "+"
     percentage = f"{symbol}{percentage:.2f}%"
     return [percentage, ticker]

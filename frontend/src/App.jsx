@@ -41,8 +41,6 @@ function App() {
         const stockBuyRef = useRef(null)
         const checkPush = (pusher) => {
             const pusherString = pusher.toString()
-            console.log(newStocks)
-            console.log(pusherString)
             const isInList = visitedDivs.current.some(
                 (pushee) => pushee.toString() === pusherString
             );
@@ -186,6 +184,7 @@ function App() {
         });
         const data = await response.json()
         if (data.status === 200){
+            console.log(data.price_data)
             setGraphData(data.price_data)
             setPercentageChange(data.percentage)
         }
@@ -265,7 +264,6 @@ function App() {
         setStockIndex(index)
     }   
     const justGoBack = () => {
-        console.log(visitedDivs)
         const lastDiv = visitedDivs.current.pop();
         lastDiv((active) => active?.());
         resetTradeFields();

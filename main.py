@@ -15,6 +15,7 @@ app = Flask(__name__)
 CORS(app)
 currency = "GBP"
 stock_search = ""
+app.json.sort_keys = False  # so graph date doesn't auto sort when returning the json
 
 @app.route("/portfolio", methods = ["POST"]) # load portfolio on web refresh
 def portfolio():
@@ -112,6 +113,7 @@ def reset_portfolio():
 def time_period():
     data = request.get_json()
     percentage, price_data = get_graph(data, time_period)
+    print(price_data, "djnasidnsaidadiujsaidjasdiujasdada")
     return jsonify({"status": 200, "price_data": price_data, "percentage": percentage})
 
 def get_graph(data, time_period):
