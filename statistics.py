@@ -82,4 +82,12 @@ def graph_data(ticker, time_period):
         date = time_stamp.strftime("%d/%m at %H:%M") if time_period != "max" and time_period != "3mo" and time_period != "1y" else time_stamp.strftime("%d/%m/%y")
         price = f"{round(float(price_info[time_stamp]), 2): .2f}"
         price_data[date] = price
+    if len(price_data) < 5 and time_period == "1d":
+        ticker_history = ticker.history(period = "2d", interval = interval)
+        price_info = ticker_history.Close
+        price_data = {}
+        for time_stamp in price_info.index:
+            date = time_stamp.strftime("%d/%m at %H:%M")
+            price = f"{round(float(price_info[time_stamp]), 2): .2f}"
+            price_data[date] = price
     return price_data
