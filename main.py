@@ -19,7 +19,6 @@ app.json.sort_keys = False  # so graph date doesn't auto sort when returning the
 
 @app.route("/portfolio", methods = ["POST"]) # load portfolio on web refresh
 def portfolio():
-    start = time.perf_counter()
     data = request.get_json()
     global currency
     currency, stock_tickers = data.values()
@@ -44,8 +43,6 @@ def portfolio():
         graph_list = ""
     average_price = my_portfolio.price_average(grouped_stocks)
     db_data = my_portfolio.display_portfolio(average_price, currency, currency_symbols)
-    end = time.perf_counter()
-    print("fetching portfolio took ",(end-start),"s")
     return jsonify({"data": db_data, "status": 200, "stock_graph": graph_list})
 
 @app.route("/stocks", methods = ["POST"]) # retreive stock searches that is chosen through the search

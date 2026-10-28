@@ -79,4 +79,3 @@ class Portfolio:
                         continue
                 stock_dict[display_name] = [percentage_change, cur_symbol, float(amount_invested)]
         return [stock_dict, f"{sum(total_invested):,.2f}"]
-                

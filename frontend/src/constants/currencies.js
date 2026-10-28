@@ -1,5 +1,6 @@
 export const Currencies ={
     "GBP": "£",
+    "GBX": "p",
     "EUR": "€",
     "USD": "$",
     "CAD": "CA$",

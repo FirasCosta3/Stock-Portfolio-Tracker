@@ -184,7 +184,6 @@ function App() {
         });
         const data = await response.json()
         if (data.status === 200){
-            console.log(data.price_data)
             setGraphData(data.price_data)
             setPercentageChange(data.percentage)
         }
