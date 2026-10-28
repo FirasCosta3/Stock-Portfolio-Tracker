@@ -56,11 +56,10 @@ def stocks():
         return jsonify({"status": 404})
     stock_searches = search_stock(stock_choice)
     global stock_search
-    stock_search = stock_searches[1]
-    if stock_searches[0] == False:
+    if not stock_searches:
         return jsonify({"status": 404})
-    else:
-        return jsonify({"data": stock_searches[0], "status": 200})
+    stock_search = stock_searches[1]
+    return jsonify({"data": stock_searches[0], "status": 200})
 
 @app.route("/tradeDetails", methods = ["POST"]) # fetch stock details from users choice
 def trade_details(): 
