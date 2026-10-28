@@ -98,7 +98,7 @@ function App() {
                 if (stockGraph){
                     setGraphData(stockGraph[0])
                     setStockFacts(stockGraph[1])
-                    setBestWorst(stockGraph[1][0])
+                    setBestWorst(stockGraph[1][0]+" performer today: ")
                     setGraphStockName(stockGraph[2][0])
                     const stockCur = stockGraph[2][1]
                     setGraphStockCurrency(Currencies[stockCur])
@@ -287,14 +287,14 @@ function App() {
             <div id="graph-title">
                 <div id="line-title">
                     <div id="best-worst-div" className={!graphTitle ? "" : "active"}>
-                        <h1 className={"best-worst main-font"}>{bestWorst} performer today: {graphStockName}</h1>
+                        <h1 className={"best-worst main-font"}>{bestWorst} {graphStockName}</h1>
                     </div>
                     <div id="best-worst-division" className={graphTitle ? "" : "active"}>
                         <h1 className={graphTitle ? "best-worst main-font" : "active"}>{graphTitle}{newGraphStockName}</h1>
                     </div>
                     <h1 className={percentageChange?.includes("-") ? "main-font active" : "main-font"} id="percentage-change">{percentageChange}</h1>
                 </div>
-                    <LineGraph symbol = {graphStockCurrency} graphData = {graphData}/>
+                    <LineGraph symbol = {graphStockCurrency} startSymbol = {chartSymbol} graphData = {graphData} setBestWorst = {setBestWorst}/>
             </div>
             <div id="periods-division">
                 <PeriodButtons timePeriod = {timePeriod} setTimePeriod = {setTimePeriod} periodChange={(time) => {setTimePeriod(time)}}/>

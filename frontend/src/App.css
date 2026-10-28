@@ -599,7 +599,7 @@ body{
     z-index: -1;
 }
 
-#line-chart-sizing{
+.line-chart-sizing{
     height: 28rem;
     margin-top: 5rem;
 }

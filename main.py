@@ -112,7 +112,6 @@ def reset_portfolio():
 def time_period():
     data = request.get_json()
     percentage, price_data = get_graph(data, time_period)
-    print(price_data, "djnasidnsaidadiujsaidjasdiujasdada")
     return jsonify({"status": 200, "price_data": price_data, "percentage": percentage})
 
 def get_graph(data, time_period):

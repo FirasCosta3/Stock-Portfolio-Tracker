@@ -1,11 +1,12 @@
 import {Line} from "react-chartjs-2";
 import {Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip} from "chart.js";
+import {ExampleLine} from "./exampleLine.jsx"
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip)
 
-export const LineGraph = ({graphData, symbol}) => {
+export const LineGraph = ({graphData, symbol, setBestWorst, startSymbol}) => {
     if (!graphData || Object.values(graphData).length === 0){
-        return <p className="main-font" id="line-loading">Loading your stocks now...</p>
+        return <ExampleLine symbol = {startSymbol} setBestWorst = {setBestWorst}/>
     }
     const graphPrices = Object.values(graphData)
     const graphTimes = Object.keys(graphData)
@@ -33,7 +34,7 @@ export const LineGraph = ({graphData, symbol}) => {
                 display: false,
             },
             tooltip: {
-                enables: true,
+                enabled: true,
                 backgroundColor: "transparent",
                 titleFont: {
                     family: "sans-serif",
@@ -69,7 +70,7 @@ export const LineGraph = ({graphData, symbol}) => {
     };
 
     return (
-    <div id="line-chart-sizing">
+    <div className="line-chart-sizing">
         <Line options={options} data={LineData}/>
     </div>
 
