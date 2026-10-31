@@ -1,3 +1,4 @@
+<img width="1719" height="976" alt="Screenshot 2026-10-31 075531" src="https://github.com/user-attachments/assets/d0d1a494-3474-4c8b-b890-65482564db1e" />
 ﻿# Stock Portfolio Tracker
 
 ## Fully functional Portfolio Tracker with live stock market data to view and track portfolio progress.
