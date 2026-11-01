@@ -1,4 +1,4 @@
-<img width="1719" height="974" alt="Screenshot 2026-10-31 075942" src="https://github.com/user-attachments/assets/cae2c655-adef-404c-9cc7-64ed470dd919" />
+<img width="1719" height="976" alt="Screenshot 2026-10-31 075531" src="https://github.com/user-attachments/assets/d0d1a494-3474-4c8b-b890-65482564db1e" />
 ﻿
 <h1>Stock Portfolio Tracker</h1>
 
@@ -14,7 +14,7 @@
 - **Live Market Data:** Real-time stock market data from the `yfinance` library.
 - **Trading System:** Stores trades in a local SQLite database (`Portfolio.db`), logging buys as positive values and sells as negative, replacing the current stock value if you choose to override old trades.
 - **Smart Profit Tracking:** Keeps your original trades intact when you trade, meaning your ROI and percentage updates stay mathematically accurate.
-<img width="1719" height="976" alt="Screenshot 2026-10-31 075531" src="https://github.com/user-attachments/assets/d0d1a494-3474-4c8b-b890-65482564db1e" />
+<img width="1719" height="974" alt="Screenshot 2026-10-31 075942" src="https://github.com/user-attachments/assets/cae2c655-adef-404c-9cc7-64ed470dd919" />
 
 ## Tech Stack
 * **Backend:** Python, Flask
