@@ -40,7 +40,10 @@ export const ExamplePie = ({symbol, setPortfolioValue}) => {
     const total = numberStocks.reduce((value, total) =>{
         return value+total
     }); 
-    setPortfolioValue(total.toLocaleString("en-GB"))
+    setPortfolioValue(total.toLocaleString("en-GB", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }))
     setPortDone(true)
     },[])
     const pieData = {
