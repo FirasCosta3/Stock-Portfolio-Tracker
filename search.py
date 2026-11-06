@@ -28,13 +28,13 @@ def search_index(search_results, index, currency):
         stock_info.append(currency)
         stock_info.append(stock_currency)
         current_price = stock_ticker.history(period="1d")
-        stock_info.append(float(f"{current_price["Close"].iloc[-1]:.2f}"))
+        stock_info.append(f"{current_price["Close"].iloc[-1]:,.2f}")
         return stock_info
     
 def get_details(stock_info, user_amount, share_p, trade_type, user_currency, current_portfolio):  # get the amount invested and the price of the stock at the price invested into a list as a tuple
     max_price, display_name, shortname, symbol, currency, real_currency, current_price = stock_info
     purchases = []
-    user_amount = int(user_amount)
+    user_amount = float(user_amount)
     if user_amount > 0:
         if real_currency == user_currency:
             amount_invested = user_amount

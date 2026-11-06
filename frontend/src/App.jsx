@@ -374,14 +374,14 @@ function App() {
                                 <label htmlFor="trade-choice" className="main-font" id="trade-label">Value</label>
                                 <form onSubmit={(e) => sendTrade(e)} className="main-font trade-value">
                                     <span className="pound">{chartSymbol}</span>
-                                    <input value={tradeValue} onChange={(e) => setTradeValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-choice" placeholder="0"></input>
+                                    <input value={tradeValue} onChange={(e) => setTradeValue(e.target.value)} autoComplete="off" className="main-font" step = "0.01" inputMode="decimal" type="number" id="trade-choice" placeholder="0"></input>
                                 </form>
                             </div>  
                             <div id="price-div">
                                 <label htmlFor="trade-p" className="main-font" id="trade-price">Price Average</label>
                                 <form onSubmit={(e) => sendTrade(e)} className="main-font trade-value">
                                     <span className="pound">{stockCurrency}</span>
-                                    <input value={buyValue} onChange={(e) => setBuyValue(e.target.value)} autoComplete="off" className="main-font" inputMode="decimal" type="number" id="trade-p" placeholder="0"></input>
+                                    <input value={buyValue} onChange={(e) => setBuyValue(e.target.value)} autoComplete="off" className="main-font" step="0.01" inputMode="decimal" type="number" id="trade-p" placeholder="0"></input>
                                 </form>
                             </div>
                             <div id="error-div">
